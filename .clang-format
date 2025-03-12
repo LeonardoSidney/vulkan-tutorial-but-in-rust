@@ -1,0 +1,49 @@
+BasedOnStyle: LLVM
+AllowShortFunctionsOnASingleLine: None
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: false
+  AfterCaseLabel: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+PenaltyBreakOpenParenthesis: 0
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyBreakAssignment: 1000
+PenaltyBreakScopeResolution: 1000
+PenaltyReturnTypeOnItsOwnLine: 1000
+BreakBeforeConceptDeclarations: Never
+BreakBeforeInlineASMColon: Never
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: AfterColon
+BreakFunctionDefinitionParameters: false
+BreakInheritanceList: AfterColon
+BreakStringLiterals: false
+AccessModifierOffset: -4
+PointerAlignment: Right
+ReferenceAlignment: Pointer
+ColumnLimit: 120
+UseTab: Never
+IndentWidth: 4
+AlignAfterOpenBracket: BlockIndent
+AllowAllParametersOfDeclarationOnNextLine: false
+BreakAfterReturnType: Automatic
+SpaceBeforeParens: ControlStatements
+QualifierAlignment: Left
+LineEnding: LF
+InsertNewlineAtEOF: true

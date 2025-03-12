@@ -1,0 +1,15 @@
+[package]
+name = "oito-caneco"
+version = "0.1.0"
+edition = "2021"
+
+[profile.dev]
+opt-level = 3
+debug = true
+
+[profile.release]
+opt-level = 3
+debug = false
+
+[build-dependencies]
+cc = { version = "1.2.16", features = ["parallel"] }
