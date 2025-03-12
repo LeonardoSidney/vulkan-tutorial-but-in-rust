@@ -1,7 +1,6 @@
 mod app;
-mod gateways;
-mod controllers;
-mod infra;
+mod utils;
+mod glfw;
 
 use app::App;
 
