@@ -6,7 +6,7 @@
       {
         "type": "shell",
         "label": "C/C++: g++ build active file",
-        "command": "make debug FILENAME=${workspaceFolder}/src/infra/vulkan/HelloTriangleApplication/debug.cpp",
+        "command": "make debug FILENAME=${workspaceFolder}/src/infra/vulkan_layer/HelloTriangleApplication/debug.cpp",
       }
     ]
   }

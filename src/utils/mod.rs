@@ -6,6 +6,5 @@ pub fn debug_mode() -> bool {
 
 #[cfg(not(debug_assertions))]
 pub fn debug_mode() -> bool {
-    println!("Debugging disabled");
     false
 }

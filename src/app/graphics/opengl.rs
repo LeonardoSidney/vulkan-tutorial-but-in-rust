@@ -4,13 +4,13 @@ use crate::glfw::{self, GLFWwindow};
 
 use super::api::{GraphicApi, Window};
 
-pub struct OpenGL {
+pub struct OpenGLApi {
     width: usize,
     height: usize,
     window: OnceCell<*mut GLFWwindow>,
 }
 
-impl OpenGL {
+impl OpenGLApi {
     pub fn new(width: usize, height: usize) -> Self {
         Self {
             width,
@@ -20,7 +20,7 @@ impl OpenGL {
     }
 }
 
-impl GraphicApi for OpenGL {
+impl GraphicApi for OpenGLApi {
     fn init_window(&self) -> Window {
         println!(
             "Vulkan window initialized with width: {} and height: {}",
@@ -53,5 +53,13 @@ impl GraphicApi for OpenGL {
 
     fn cleanup(&self) {
         println!("OpenGL cleanup");
+    }
+
+    fn should_close(&self) -> bool {
+        true
+    }
+
+    fn pool_events(&self) {
+        println!("OpenGL pool events");
     }
 }

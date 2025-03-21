@@ -1,4 +1,5 @@
 extern crate bindgen;
+extern crate cc;
 
 use std::env;
 use std::path::PathBuf;
@@ -16,6 +17,7 @@ fn main() {
         .allowlist_var("GLFW_RESIZABLE")
         .allowlist_var("GLFW_FALSE")
         .allowlist_type("GLFWwindow")
+        .allowlist_type("GLFWmonitor")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .generate()
         .expect("Unable to generate glfw bindings");
@@ -26,10 +28,35 @@ fn main() {
 
     let vulkan_include_dir: &str = "/usr/include/vulkan";
     let vulkan_header_file: String = format!("{}/vulkan.h", vulkan_include_dir);
+    let vulkan_core_header_file: String = format!("{}/vulkan_core.h", vulkan_include_dir);
 
     let bindings_vulkan = bindgen::Builder::default()
         .header(vulkan_header_file)
+        .header(vulkan_core_header_file)
         .allowlist_var("VK_KHR_SWAPCHAIN_EXTENSION_NAME")
+        .allowlist_type("VkLayerProperties")
+        .allowlist_type("VkResult")
+        .allowlist_type("VkApplicationInfo")
+        .allowlist_type("VkInstanceCreateInfo")
+        .allowlist_type("VkExtensionProperties")
+        .allowlist_type("VkDebugUtilsMessengerCreateInfoEXT")
+        .allowlist_type("VkInstance")
+        .allowlist_type("VkAllocationCallbacks")
+        .allowlist_type("VkDebugUtilsMessengerEXT")
+        .allowlist_type("PFN_vkVoidFunction")
+        .allowlist_item("VkStructureType")
+        .allowlist_item("VK_EXT_DEBUG_UTILS_EXTENSION_NAME")
+        .allowlist_item("VkDebugUtilsMessageSeverityFlagBitsEXT")
+        .allowlist_item("VkDebugUtilsMessageTypeFlagBitsEXT")
+        .allowlist_item("VkDebugUtilsMessageTypeFlagsEXT")
+        .allowlist_item("PFN_vkCreateDebugUtilsMessengerEXT")
+        .allowlist_item("PFN_vkDestroyDebugUtilsMessengerEXT")
+        .allowlist_item("VkDebugUtilsMessengerCallbackDataEXT")
+        .allowlist_item("VkBool32")
+        .allowlist_item("VK_FALSE")
+        .allowlist_item("VkSurfaceKHR")
+        .allowlist_item("PFN_vkDebugUtilsMessengerCallbackEXT")
+        .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: true })
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .generate()
         .expect("Unable to generate vulkan bindings");
@@ -94,4 +121,44 @@ fn main() {
     if !output.status.success() {
         panic!("Shader compilation failed: {:?}", output);
     }
+
+    let mut build_custom_vk_create_instance = cc::Build::new();
+    build_custom_vk_create_instance
+        .file("src/vulkan/vk_create_instance.c")
+        .flag("-shared")
+        .flag("-fPIC")
+        .flag("-O3")
+        .flag("-g")
+        .compile("custom_vk_create_instance");  
+
+    println!("cargo:rerun-if-changed=src/vulkan/vk_create_instance.c");
+    println!("cargo:rustc-link-lib=vulkan");
+
+    let mut build_debug_callback = cc::Build::new();
+    build_debug_callback
+        .cpp(true)
+        .file("src/vulkan/debug_callback.cpp")
+        .flag("-shared")
+        .flag("-fPIC")
+        .flag("-O3")
+        .flag("-g")
+        .compile("debug_callback");
+
+    println!("cargo:rerun-if-changed=src/vulkan/debug_callback.cpp");
+    println!("cargo:rustc-link-lib=vulkan");
+
+    let mut build_populate_debug_messenger_create_info = cc::Build::new();
+    build_populate_debug_messenger_create_info
+        .cpp(true)
+        .file("src/vulkan/populate_debug_message_create_info.cpp")
+        .flag("-shared")
+        .flag("-fPIC")
+        .flag("-O3")
+        .flag("-g")
+        .compile("populate_debug_messenger_create_info");
+
+    println!("cargo:rerun-if-changed=src/vulkan/populate_debug_message_create_info.cpp");
+    println!("cargo:rustc-link-lib=vulkan");
+
+
 }

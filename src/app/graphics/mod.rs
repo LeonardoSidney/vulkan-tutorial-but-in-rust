@@ -3,8 +3,8 @@ pub mod opengl;
 pub mod vulkan;
 
 use api::{GraphicApi, Window};
-use opengl::OpenGL;
-use vulkan::Vulkan;
+use opengl::OpenGLApi;
+use vulkan::VulkanApi;
 
 #[derive(PartialEq)]
 pub enum GraphicsType {
@@ -19,8 +19,8 @@ pub struct Graphics {
 impl Graphics {
     pub fn new(width: usize, height: usize, api_type: GraphicsType) -> Self {
         let api: Box<dyn GraphicApi> = match api_type {
-            GraphicsType::Vulkan => Box::new(Vulkan::new(width, height)),
-            GraphicsType::OpenGL => Box::new(OpenGL::new(width, height)),
+            GraphicsType::Vulkan => Box::new(VulkanApi::new(width, height)),
+            GraphicsType::OpenGL => Box::new(OpenGLApi::new(width, height)),
         };
 
         Self { api }
@@ -48,5 +48,13 @@ impl Graphics {
 
     pub fn cleanup(&self) {
         self.api.cleanup()
+    }
+
+    pub fn should_close(&self) -> bool {
+        self.api.should_close()
+    }
+
+    pub fn pool_events(&self) {
+        self.api.pool_events()
     }
 }

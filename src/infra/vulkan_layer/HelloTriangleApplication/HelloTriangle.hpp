@@ -182,7 +182,7 @@ std::vector<const char *> HelloTriangleApplication::_getRequiredExtensions() {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
-    std::cout << "Required extensions:" << std::endl;
+    std::cout << "Required glfw extensions:" << std::endl;
     for (const auto &extension : extensions) {
         std::cout << '\t' << extension << std::endl;
     }

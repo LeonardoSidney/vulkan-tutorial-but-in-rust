@@ -31,5 +31,13 @@ impl App {
         return api;
     }
 
-    fn _main_loop(&self) {}
+    fn _main_loop(&self) {
+        
+        loop {
+            if self.graphic_api.should_close() {
+                break;
+            }
+            self.graphic_api.pool_events();
+        }
+    }
 }

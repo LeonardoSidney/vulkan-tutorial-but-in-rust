@@ -1,6 +1,7 @@
 mod app;
 mod utils;
 mod glfw;
+mod vulkan;
 
 use app::App;
 
