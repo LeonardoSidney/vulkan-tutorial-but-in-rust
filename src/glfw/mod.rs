@@ -1,17 +1,11 @@
-use std::ffi::CString;
+use std::ffi::{c_char, c_int, c_void, CString};
 
 use crate::vulkan::{VkAllocationCallbacks, VkInstance, VkResult, VkSurfaceKHR};
 
 #[allow(dead_code)]
 mod ffi;
 
-pub const GLFW_CLIENT_API: isize = ffi::GLFW_CLIENT_API as isize;
-pub const GLFW_NO_API: isize = ffi::GLFW_NO_API as isize;
-pub const GLFW_RESIZABLE: isize = ffi::GLFW_RESIZABLE as isize;
-pub const GLFW_FALSE: isize = ffi::GLFW_FALSE as isize;
-
-pub type GLFWwindow = ffi::GLFWwindow;
-pub type GLFWmonitor = ffi::GLFWmonitor;
+pub use ffi::{GLFWmonitor, GLFWwindow, GLFW_CLIENT_API, GLFW_FALSE, GLFW_NO_API, GLFW_RESIZABLE};
 
 pub fn glfw_init() {
     unsafe { ffi::glfwInit() }
@@ -29,7 +23,7 @@ pub fn glfw_create_window(
     title: &str,
     monitor: *mut GLFWmonitor,
     share: *mut GLFWwindow,
-) -> *mut ffi::GLFWwindow {
+) -> *mut GLFWwindow {
     let c_title: CString = CString::new(title).expect("CString::new failed");
     unsafe {
         let c_title_ptr = c_title.as_ptr();
@@ -37,13 +31,11 @@ pub fn glfw_create_window(
     }
 }
 
-pub fn glfw_get_required_instance_extensions(
-    count: *mut u32,
-) -> *const *const std::os::raw::c_char {
+pub fn glfw_get_required_instance_extensions(count: *mut u32) -> *const *const c_char {
     unsafe { ffi::glfwGetRequiredInstanceExtensions(count) }
 }
 
-pub fn glfw_destroy_window(window: *mut ffi::GLFWwindow) {
+pub fn glfw_destroy_window(window: *mut GLFWwindow) {
     unsafe { ffi::glfwDestroyWindow(window) }
 }
 
@@ -51,7 +43,7 @@ pub fn glfw_terminate() {
     unsafe { ffi::glfwTerminate() }
 }
 
-pub fn glfw_window_should_close(window: *mut ffi::GLFWwindow) -> i32 {
+pub fn glfw_window_should_close(window: *mut GLFWwindow) -> i32 {
     unsafe { ffi::glfwWindowShouldClose(window) }
 }
 
@@ -66,4 +58,12 @@ pub fn glfw_create_window_surface(
     surface: *mut VkSurfaceKHR,
 ) -> VkResult {
     unsafe { ffi::glfwCreateWindowSurface(instance, window, allocator, surface) }
+}
+
+pub fn glfw_get_framebuffer_size(
+    window: *const GLFWwindow,
+    width: *mut c_int,
+    height: *mut c_int,
+) -> c_void {
+    unsafe { ffi::glfwGetFramebufferSize(window, width, height) }
 }

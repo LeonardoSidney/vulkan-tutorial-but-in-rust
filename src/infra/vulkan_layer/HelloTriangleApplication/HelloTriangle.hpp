@@ -441,8 +441,8 @@ void HelloTriangleApplication::_createLogicalDevice() {
 
     createInfo.pEnabledFeatures = &deviceFeatures;
 
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(this->deviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = this->deviceExtensions.data();
 
     createInfo.enabledLayerCount = 0;
 

@@ -42,7 +42,87 @@ unsafe extern "C" {
         instance: VkInstance,
         surface: VkSurfaceKHR,
         pAllocator: *const VkAllocationCallbacks,
-    );
+    ) -> c_void;
+    pub unsafe fn vkEnumeratePhysicalDevices(
+        instance: VkInstance,
+        pPhysicalDeviceCount: *mut u32,
+        pPhysicalDevices: *mut VkPhysicalDevice,
+    ) -> VkResult;
+    pub unsafe fn vkGetPhysicalDeviceProperties(
+        physicalDevice: VkPhysicalDevice,
+        pProperties: *mut VkPhysicalDeviceProperties,
+    ) -> c_void;
+    pub unsafe fn vkGetPhysicalDeviceFeatures(
+        physicalDevice: VkPhysicalDevice,
+        pFeatures: *mut VkPhysicalDeviceFeatures,
+    ) -> c_void;
+    pub unsafe fn vkGetPhysicalDeviceQueueFamilyProperties(
+        physicalDevice: VkPhysicalDevice,
+        pQueueFamilyPropertyCount: *mut u32,
+        pQueueFamilyProperties: *mut VkQueueFamilyProperties,
+    ) -> c_void;
+    pub unsafe fn vkGetPhysicalDeviceSurfaceSupportKHR(
+        physicalDevice: VkPhysicalDevice,
+        queueFamilyIndex: u32,
+        surface: VkSurfaceKHR,
+        pSupported: *mut VkBool32,
+    ) -> VkResult;
+    pub unsafe fn vkEnumerateDeviceExtensionProperties(
+        physicalDevice: VkPhysicalDevice,
+        pLayerName: *const std::os::raw::c_char,
+        pPropertyCount: *mut u32,
+        pProperties: *mut VkExtensionProperties,
+    ) -> VkResult;
+    pub unsafe fn vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+        physicalDevice: VkPhysicalDevice,
+        surface: VkSurfaceKHR,
+        pSurfaceCapabilities: *mut VkSurfaceCapabilitiesKHR,
+    ) -> VkResult;
+    pub unsafe fn vkGetPhysicalDeviceSurfaceFormatsKHR(
+        physicalDevice: VkPhysicalDevice,
+        surface: VkSurfaceKHR,
+        pSurfaceFormatCount: *mut u32,
+        pSurfaceFormats: *mut VkSurfaceFormatKHR,
+    ) -> VkResult;
+    pub unsafe fn vkGetPhysicalDeviceSurfacePresentModesKHR(
+        physicalDevice: VkPhysicalDevice,
+        surface: VkSurfaceKHR,
+        pPresentModeCount: *mut u32,
+        pPresentModes: *mut VkPresentModeKHR,
+    ) -> VkResult;
+    pub unsafe fn vkCreateDevice(
+        physicalDevice: VkPhysicalDevice,
+        pCreateInfo: *const VkDeviceCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pDevice: *const VkDevice,
+    ) -> VkResult;
+    pub unsafe fn vkGetDeviceQueue(
+        device: VkDevice,
+        queueFamilyIndex: u32,
+        queueIndex: u32,
+        pQueue: *mut VkQueue,
+    ) -> c_void;
+    pub unsafe fn vkDestroyDevice(
+        device: VkDevice,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
+    pub unsafe fn vkCreateSwapchainKHR(
+        device: VkDevice,
+        pCreateInfo: *const VkSwapchainCreateInfoKHR,
+        pAllocator: *const VkAllocationCallbacks,
+        pSwapchain: *mut VkSwapchainKHR,
+    ) -> VkResult;
+    pub unsafe fn vkGetSwapchainImagesKHR(
+        device: VkDevice,
+        pSwapchain: VkSwapchainKHR,
+        pSwapchainImageCount: *mut u32,
+        pSwapchainImages: *mut VkImage
+    ) -> VkResult;
+    pub unsafe fn vkDestroySwapchainKHR(
+        device: VkDevice,
+        swapchain: VkSwapchainKHR,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
 }
 
 //#define VK_MAKE_API_VERSION(variant, major, minor, patch) ((((uint32_t)(variant)) << 29U) | (((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))

@@ -1,6 +1,9 @@
 use std::cell::OnceCell;
 
-use crate::glfw::{self, GLFWwindow};
+use crate::glfw::{
+    glfw_create_window, glfw_init, glfw_window_hint, GLFWwindow, GLFW_CLIENT_API, GLFW_FALSE,
+    GLFW_NO_API, GLFW_RESIZABLE,
+};
 
 use super::api::{GraphicApi, Window};
 
@@ -27,12 +30,12 @@ impl GraphicApi for OpenGLApi {
             self.width, self.height
         );
 
-        glfw::glfw_init();
+        glfw_init();
 
-        glfw::glfw_window_hint(glfw::GLFW_CLIENT_API, glfw::GLFW_NO_API);
-        glfw::glfw_window_hint(glfw::GLFW_RESIZABLE, glfw::GLFW_FALSE);
+        glfw_window_hint(GLFW_CLIENT_API as isize, GLFW_NO_API as isize);
+        glfw_window_hint(GLFW_RESIZABLE as isize, GLFW_FALSE as isize);
 
-        let window = glfw::glfw_create_window(
+        let window = glfw_create_window(
             self.width as i32,
             self.height as i32,
             "Oito-caneco",

@@ -6,6 +6,8 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
+    println!("cargo:rerun-if-changed=build.rs");
+
     let glfw_include_dir: &str = "/usr/include/GLFW";
     let glfw_header_file: String = format!("{}/glfw3.h", glfw_include_dir);
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
@@ -55,7 +57,30 @@ fn main() {
         .allowlist_item("VkBool32")
         .allowlist_item("VK_FALSE")
         .allowlist_item("VkSurfaceKHR")
+        .allowlist_item("VkPhysicalDevice")
         .allowlist_item("PFN_vkDebugUtilsMessengerCallbackEXT")
+        .allowlist_item("VkPhysicalDeviceProperties")
+        .allowlist_item("VkPhysicalDeviceFeatures")
+        .allowlist_item("VkQueueFamilyProperties")
+        .allowlist_item("VkQueueFlagBits")
+        .allowlist_item("VkSurfaceCapabilitiesKHR")
+        .allowlist_item("VkSurfaceFormatKHR")
+        .allowlist_item("VkPresentModeKHR")
+        .allowlist_item("VkDeviceQueueCreateInfo")
+        .allowlist_item("VkDeviceCreateInfo")
+        .allowlist_item("VkDevice")
+        .allowlist_item("VkQueue")
+        .allowlist_item("VkFormat")
+        .allowlist_item("VkColorSpaceKHR")
+        .allowlist_item("VkExtent2D")
+        .allowlist_item("VkSwapchainCreateInfoKHR")
+        .allowlist_item("VkImageUsageFlagBits")
+        .allowlist_item("VkSharingMode")
+        .allowlist_item("VkCompositeAlphaFlagBitsKHR")
+        .allowlist_item("VK_TRUE")
+        .allowlist_item("VK_NULL_HANDLE")
+        .allowlist_item("VkSwapchainKHR")
+        .allowlist_item("VkImage")
         .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: true })
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .generate()

@@ -2,6 +2,8 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
+use std::ffi::{c_char, c_int, c_void};
+
 use crate::vulkan::{VkAllocationCallbacks, VkInstance, VkResult, VkSurfaceKHR};
 
 include!(concat!(env!("OUT_DIR"), "/bindings_glfw.rs"));
@@ -12,13 +14,13 @@ unsafe extern "C" {
     pub unsafe fn glfwCreateWindow(
         width: i32,
         height: i32,
-        title: *const std::os::raw::c_char,
+        title: *const c_char,
         monitor: *mut GLFWmonitor,
         share: *mut GLFWwindow,
     ) -> *mut GLFWwindow;
     pub unsafe fn glfwGetRequiredInstanceExtensions(
         count: *mut u32,
-    ) -> *const *const std::os::raw::c_char;
+    ) -> *const *const c_char;
     pub unsafe fn glfwDestroyWindow(window: *mut GLFWwindow);
     pub unsafe fn glfwTerminate();
     pub unsafe fn glfwWindowShouldClose(window: *mut GLFWwindow) -> i32;
@@ -29,4 +31,9 @@ unsafe extern "C" {
         allocator: *const VkAllocationCallbacks,
         surface: *mut VkSurfaceKHR,
     ) -> VkResult;
+    pub unsafe fn glfwGetFramebufferSize(
+        window: *const GLFWwindow,
+        width: *mut c_int,
+        height: *mut c_int
+    ) -> c_void;
 }
