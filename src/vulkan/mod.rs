@@ -7,21 +7,30 @@ pub use ffi::{
     PFN_vkCreateDebugUtilsMessengerEXT, PFN_vkDebugUtilsMessengerCallbackEXT,
     PFN_vkDestroyDebugUtilsMessengerEXT, VkAccessFlagBits, VkAllocationCallbacks,
     VkApplicationInfo, VkAttachmentDescription, VkAttachmentLoadOp, VkAttachmentReference,
-    VkAttachmentStoreOp, VkBool32, VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle,
-    VkCompositeAlphaFlagBitsKHR, VkDebugUtilsMessageSeverityFlagBitsEXT,
+    VkAttachmentStoreOp, VkBlendFactor, VkBlendOp, VkBool32, VkColorComponentFlagBits,
+    VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle, VkCompositeAlphaFlagBitsKHR,
+    VkCullModeFlagBits, VkDebugUtilsMessageSeverityFlagBitsEXT,
     VkDebugUtilsMessageSeverityFlagsEXT, VkDebugUtilsMessageTypeFlagBitsEXT,
     VkDebugUtilsMessageTypeFlagsEXT, VkDebugUtilsMessengerCallbackDataEXT,
     VkDebugUtilsMessengerCreateInfoEXT, VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo,
-    VkDeviceQueueCreateInfo, VkExtensionProperties, VkExtent2D, VkFormat, VkImage,
-    VkImageAspectFlagBits, VkImageLayout, VkImageSubresourceRange, VkImageUsageFlagBits,
-    VkImageView, VkImageViewCreateInfo, VkImageViewType, VkInstance, VkInstanceCreateFlags,
-    VkInstanceCreateInfo, VkLayerProperties, VkPhysicalDevice, VkPhysicalDeviceFeatures,
-    VkPhysicalDeviceProperties, VkPipelineBindPoint, VkPipelineStageFlagBits, VkPresentModeKHR,
-    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkResult, VkSampleCountFlagBits,
-    VkSharingMode, VkStructureType, VkSubpassDependency, VkSubpassDescription,
-    VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR,
-    VkSwapchainKHR, VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE,
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_SUBPASS_EXTERNAL, VK_TRUE,VkRenderPassCreateInfo, VkRenderPass
+    VkDeviceQueueCreateInfo, VkDynamicState, VkExtensionProperties, VkExtent2D, VkFormat,
+    VkFrontFace, VkGraphicsPipelineCreateInfo, VkImage, VkImageAspectFlagBits, VkImageLayout,
+    VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo,
+    VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties,
+    VkLogicOp, VkOffset2D, VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties,
+    VkPipeline, VkPipelineBindPoint, VkPipelineCache, VkPipelineColorBlendAttachmentState,
+    VkPipelineColorBlendStateCreateInfo, VkPipelineDynamicStateCreateInfo,
+    VkPipelineInputAssemblyStateCreateInfo, VkPipelineLayout, VkPipelineLayoutCreateInfo,
+    VkPipelineMultisampleStateCreateInfo, VkPipelineRasterizationStateCreateInfo,
+    VkPipelineShaderStageCreateInfo, VkPipelineStageFlagBits, VkPipelineVertexInputStateCreateInfo,
+    VkPipelineViewportStateCreateInfo, VkPolygonMode, VkPresentModeKHR, VkPrimitiveTopology,
+    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkRect2D, VkRenderPass,
+    VkRenderPassCreateInfo, VkResult, VkSampleCountFlagBits, VkShaderModule,
+    VkShaderModuleCreateInfo, VkShaderStageFlagBits, VkSharingMode, VkStructureType,
+    VkSubpassDependency, VkSubpassDescription, VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR,
+    VkSurfaceKHR, VkSwapchainCreateInfoKHR, VkSwapchainKHR, VkViewport, VK_API_VERSION_1_0,
+    VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE, VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_MAKE_API_VERSION, VK_SUBPASS_EXTERNAL, VK_TRUE,
 };
 
 pub fn vk_enumerate_instance_layer_properties(
@@ -311,4 +320,66 @@ pub fn vk_destroy_render_pass(
     p_allocator: *const VkAllocationCallbacks,
 ) -> c_void {
     unsafe { ffi::vkDestroyRenderPass(device, render_pass, p_allocator) }
+}
+
+pub fn vk_create_shader_module(
+    device: VkDevice,
+    p_create_info: *const VkShaderModuleCreateInfo,
+    p_allocator: *const VkAllocationCallbacks,
+    p_shader_module: *mut VkShaderModule,
+) -> VkResult {
+    unsafe { ffi::vkCreateShaderModule(device, p_create_info, p_allocator, p_shader_module) }
+}
+
+pub fn vk_create_pipeline_layout(
+    device: VkDevice,
+    p_create_info: *const VkPipelineLayoutCreateInfo,
+    p_allocator: *const VkAllocationCallbacks,
+    p_pipeline_layout: *mut VkPipelineLayout,
+) -> VkResult {
+    unsafe { ffi::vkCreatePipelineLayout(device, p_create_info, p_allocator, p_pipeline_layout) }
+}
+
+pub fn vk_create_graphics_pipelines(
+    device: VkDevice,
+    pipeline_cache: VkPipelineCache,
+    create_info_count: u32,
+    p_create_infos: *const VkGraphicsPipelineCreateInfo,
+    p_allocator: *const VkAllocationCallbacks,
+    p_pipelines: *mut VkPipeline,
+) -> VkResult {
+    unsafe {
+        ffi::vkCreateGraphicsPipelines(
+            device,
+            pipeline_cache,
+            create_info_count,
+            p_create_infos,
+            p_allocator,
+            p_pipelines,
+        )
+    }
+}
+
+pub fn vk_destroy_shader_module(
+    device: VkDevice,
+    shader_module: VkShaderModule,
+    p_allocator: *const VkAllocationCallbacks,
+) -> c_void {
+    unsafe { ffi::vkDestroyShaderModule(device, shader_module, p_allocator) }
+}
+
+pub fn vk_destroy_pipeline_layout(
+    device: VkDevice,
+    pipeline_layout: VkPipelineLayout,
+    p_allocator: *const VkAllocationCallbacks,
+) -> c_void {
+    unsafe { ffi::vkDestroyPipelineLayout(device, pipeline_layout, p_allocator) }
+}
+
+pub fn vk_destroy_pipeline(
+    device: VkDevice,
+    pipeline: VkPipeline,
+    p_allocator: *const VkAllocationCallbacks,
+) -> c_void {
+    unsafe { ffi::vkDestroyPipeline(device, pipeline, p_allocator) }
 }

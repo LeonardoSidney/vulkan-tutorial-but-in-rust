@@ -145,6 +145,41 @@ unsafe extern "C" {
         renderPass: VkRenderPass,
         pAllocator: *const VkAllocationCallbacks,
     ) -> c_void;
+    pub unsafe fn vkCreateShaderModule(
+        device: VkDevice,
+        pCreateInfo: *const VkShaderModuleCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pShaderModule: *mut VkShaderModule,
+    ) -> VkResult;
+    pub unsafe fn vkCreatePipelineLayout(
+        device: VkDevice,
+        pCreateInfo: *const VkPipelineLayoutCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pPipelineLayout: *mut VkPipelineLayout,
+    ) -> VkResult;
+    pub unsafe fn vkCreateGraphicsPipelines(
+        device: VkDevice,
+        pipelineCache: VkPipelineCache,
+        createInfoCount: u32,
+        pCreateInfos: *const VkGraphicsPipelineCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pPipelines: *mut VkPipeline,
+    ) -> VkResult;
+    pub unsafe fn vkDestroyShaderModule(
+        device: VkDevice,
+        shaderModule: VkShaderModule,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
+    pub unsafe fn vkDestroyPipelineLayout(
+        device: VkDevice,
+        pipelineLayout: VkPipelineLayout,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
+    pub unsafe fn vkDestroyPipeline(
+        device: VkDevice,
+        pipeline: VkPipeline,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
 }
 
 //#define VK_MAKE_API_VERSION(variant, major, minor, patch) ((((uint32_t)(variant)) << 29U) | (((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))

@@ -102,6 +102,35 @@ fn main() {
         .allowlist_item("VkSubpassDependency")
         .allowlist_item("VkRenderPassCreateInfo")
         .allowlist_item("VkRenderPass")
+        .allowlist_item("VkShaderModule")
+        .allowlist_item("VkShaderModuleCreateInfo")
+        .allowlist_item("VkPipelineShaderStageCreateInfo")
+        .allowlist_item("VkShaderStageFlagBits")
+        .allowlist_item("VkPipelineVertexInputStateCreateInfo")
+        .allowlist_item("VkPrimitiveTopology")
+        .allowlist_item("VkPipelineInputAssemblyStateCreateInfo")
+        .allowlist_item("VkViewport")
+        .allowlist_item("VkRect2D")
+        .allowlist_item("VkOffset2D")
+        .allowlist_item("VkPipelineViewportStateCreateInfo")
+        .allowlist_item("VkPipelineRasterizationStateCreateInfo")
+        .allowlist_item("VkPolygonMode")
+        .allowlist_item("VkCullModeFlagBits")
+        .allowlist_item("VkFrontFace")
+        .allowlist_item("VkPipelineMultisampleStateCreateInfo")
+        .allowlist_item("VkPipelineColorBlendAttachmentState")
+        .allowlist_item("VkColorComponentFlagBits")
+        .allowlist_item("VkBlendFactor")
+        .allowlist_item("VkBlendOp")
+        .allowlist_item("VkPipelineColorBlendStateCreateInfo")
+        .allowlist_item("VkLogicOp")
+        .allowlist_item("VkDynamicState")
+        .allowlist_item("VkPipelineDynamicStateCreateInfo")
+        .allowlist_item("VkPipelineLayoutCreateInfo")
+        .allowlist_item("VkPipelineLayout")
+        .allowlist_item("VkGraphicsPipelineCreateInfo")
+        .allowlist_item("VkPipeline")
+        .allowlist_item("VkPipelineCache")
         .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: true })
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .generate()
@@ -144,9 +173,9 @@ fn main() {
 
     let mut build_hello_shaders = Command::new("glslc");
     build_hello_shaders
-        .arg("src/infra/vulkan_layer/HelloTriangleApplication/shaders/shader.frag")
+        .arg("src/shaders/shader.frag")
         .arg("-o")
-        .arg("src/infra/vulkan_layer/HelloTriangleApplication/shaders/shader.frag.spv");
+        .arg("src/shaders/shader.frag.spv");
     let output = build_hello_shaders
         .output()
         .expect("Failed to compile fragment shader");
@@ -157,9 +186,9 @@ fn main() {
 
     build_hello_shaders = Command::new("glslc");
     build_hello_shaders
-        .arg("src/infra/vulkan_layer/HelloTriangleApplication/shaders/shader.vert")
+        .arg("src/shaders/shader.vert")
         .arg("-o")
-        .arg("src/infra/vulkan_layer/HelloTriangleApplication/shaders/shader.vert.spv");
+        .arg("src/shaders/shader.vert.spv");
     let output = build_hello_shaders
         .output()
         .expect("Failed to compile vertex shader");
@@ -205,6 +234,4 @@ fn main() {
 
     println!("cargo:rerun-if-changed=src/vulkan/populate_debug_message_create_info.cpp");
     println!("cargo:rustc-link-lib=vulkan");
-
-
 }

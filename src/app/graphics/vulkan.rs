@@ -1,6 +1,8 @@
 use std::cell::OnceCell;
 use std::collections::HashSet;
 use std::ffi::{c_char, c_float, c_int, c_void, CStr, CString};
+use std::fs::File;
+use std::io::Read;
 use std::mem::MaybeUninit;
 use std::vec;
 
@@ -12,7 +14,44 @@ use crate::glfw::{
 };
 use crate::utils::debug_mode;
 use crate::vulkan::{
-    vk_bit_message_severity, vk_bit_message_type, vk_create_device, vk_create_image_view, vk_create_instance, vk_create_render_pass, vk_create_swapchain_khr, vk_destroy_device, vk_destroy_image_view, vk_destroy_instance, vk_destroy_render_pass, vk_destroy_surface_khr, vk_destroy_swapchain_khr, vk_enumerate_device_extension_properties, vk_enumerate_instance_extension_properties, vk_enumerate_instance_layer_properties, vk_enumerate_physical_devices, vk_get_device_queue, vk_get_instance_proc_addr, vk_get_physical_device_features, vk_get_physical_device_properties, vk_get_physical_device_queue_family_properties, vk_get_physical_device_surface_capabilities_khr, vk_get_physical_device_surface_formats_khr, vk_get_physical_device_surface_present_modes_khr, vk_get_physical_device_surface_support_khr, vk_get_swapchain_images_khr, PFN_vkCreateDebugUtilsMessengerEXT, PFN_vkDebugUtilsMessengerCallbackEXT, PFN_vkDestroyDebugUtilsMessengerEXT, VkAccessFlagBits, VkAllocationCallbacks, VkApplicationInfo, VkAttachmentDescription, VkAttachmentLoadOp, VkAttachmentReference, VkAttachmentStoreOp, VkBool32, VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle, VkCompositeAlphaFlagBitsKHR, VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT, VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo, VkExtensionProperties, VkExtent2D, VkFormat, VkImage, VkImageAspectFlagBits, VkImageLayout, VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo, VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties, VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties, VkPipelineBindPoint, VkPipelineStageFlagBits, VkPresentModeKHR, VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkRenderPass, VkRenderPassCreateInfo, VkResult, VkSampleCountFlagBits, VkSharingMode, VkStructureType, VkSubpassDependency, VkSubpassDescription, VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR, VkSwapchainKHR, VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE, VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_SUBPASS_EXTERNAL, VK_TRUE
+    vk_bit_message_severity, vk_bit_message_type, vk_create_device, vk_create_graphics_pipelines,
+    vk_create_image_view, vk_create_instance, vk_create_pipeline_layout, vk_create_render_pass,
+    vk_create_shader_module, vk_create_swapchain_khr, vk_destroy_device, vk_destroy_image_view,
+    vk_destroy_instance, vk_destroy_pipeline, vk_destroy_pipeline_layout, vk_destroy_render_pass,
+    vk_destroy_shader_module, vk_destroy_surface_khr, vk_destroy_swapchain_khr,
+    vk_enumerate_device_extension_properties, vk_enumerate_instance_extension_properties,
+    vk_enumerate_instance_layer_properties, vk_enumerate_physical_devices, vk_get_device_queue,
+    vk_get_instance_proc_addr, vk_get_physical_device_features, vk_get_physical_device_properties,
+    vk_get_physical_device_queue_family_properties,
+    vk_get_physical_device_surface_capabilities_khr, vk_get_physical_device_surface_formats_khr,
+    vk_get_physical_device_surface_present_modes_khr, vk_get_physical_device_surface_support_khr,
+    vk_get_swapchain_images_khr, PFN_vkCreateDebugUtilsMessengerEXT,
+    PFN_vkDebugUtilsMessengerCallbackEXT, PFN_vkDestroyDebugUtilsMessengerEXT, VkAccessFlagBits,
+    VkAllocationCallbacks, VkApplicationInfo, VkAttachmentDescription, VkAttachmentLoadOp,
+    VkAttachmentReference, VkAttachmentStoreOp, VkBlendFactor, VkBlendOp, VkBool32,
+    VkColorComponentFlagBits, VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle,
+    VkCompositeAlphaFlagBitsKHR, VkCullModeFlagBits, VkDebugUtilsMessageSeverityFlagBitsEXT,
+    VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT,
+    VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT,
+    VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo,
+    VkDynamicState, VkExtensionProperties, VkExtent2D, VkFormat, VkFrontFace,
+    VkGraphicsPipelineCreateInfo, VkImage, VkImageAspectFlagBits, VkImageLayout,
+    VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo,
+    VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties,
+    VkLogicOp, VkOffset2D, VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties,
+    VkPipeline, VkPipelineBindPoint, VkPipelineColorBlendAttachmentState,
+    VkPipelineColorBlendStateCreateInfo, VkPipelineDynamicStateCreateInfo,
+    VkPipelineInputAssemblyStateCreateInfo, VkPipelineLayout, VkPipelineLayoutCreateInfo,
+    VkPipelineMultisampleStateCreateInfo, VkPipelineRasterizationStateCreateInfo,
+    VkPipelineShaderStageCreateInfo, VkPipelineStageFlagBits, VkPipelineVertexInputStateCreateInfo,
+    VkPipelineViewportStateCreateInfo, VkPolygonMode, VkPresentModeKHR, VkPrimitiveTopology,
+    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkRect2D, VkRenderPass,
+    VkRenderPassCreateInfo, VkResult, VkSampleCountFlagBits, VkShaderModule,
+    VkShaderModuleCreateInfo, VkShaderStageFlagBits, VkSharingMode, VkStructureType,
+    VkSubpassDependency, VkSubpassDescription, VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR,
+    VkSurfaceKHR, VkSwapchainCreateInfoKHR, VkSwapchainKHR, VkViewport, VK_API_VERSION_1_0,
+    VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE, VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_MAKE_API_VERSION, VK_SUBPASS_EXTERNAL, VK_TRUE,
 };
 use crate::{glfw::GLFWwindow, utils};
 
@@ -21,35 +60,64 @@ use VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR;
 use VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 use VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE;
 use VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE;
+use VkBlendFactor::VK_BLEND_FACTOR_ONE;
+use VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+use VkBlendFactor::VK_BLEND_FACTOR_SRC_ALPHA;
+use VkBlendFactor::VK_BLEND_FACTOR_ZERO;
+use VkBlendOp::VK_BLEND_OP_ADD;
+use VkColorComponentFlagBits::VK_COLOR_COMPONENT_A_BIT;
+use VkColorComponentFlagBits::VK_COLOR_COMPONENT_B_BIT;
+use VkColorComponentFlagBits::VK_COLOR_COMPONENT_G_BIT;
+use VkColorComponentFlagBits::VK_COLOR_COMPONENT_R_BIT;
 use VkColorSpaceKHR::VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 use VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
 use VkCompositeAlphaFlagBitsKHR::VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+use VkCullModeFlagBits::VK_CULL_MODE_BACK_BIT;
 use VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 use VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
 use VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+use VkDynamicState::VK_DYNAMIC_STATE_LINE_WIDTH;
+use VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT;
 use VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
+use VkFrontFace::VK_FRONT_FACE_CLOCKWISE;
 use VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 use VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 use VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 use VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
 use VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 use VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+use VkLogicOp::VK_LOGIC_OP_COPY;
 use VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS;
 use VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+use VkPolygonMode::VK_POLYGON_MODE_FILL;
 use VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR;
 use VkPresentModeKHR::VK_PRESENT_MODE_MAILBOX_KHR;
+use VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 use VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT;
 use VkResult::VK_SUCCESS;
 use VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+use VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
+use VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
 use VkSharingMode::VK_SHARING_MODE_CONCURRENT;
 use VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
 use VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 
 pub extern "C" fn debug_callback(
@@ -117,6 +185,8 @@ pub struct VulkanApi {
     swapchain_extent: OnceCell<VkExtent2D>,
     swapchain_image_views: OnceCell<Vec<VkImageView>>,
     render_pass: OnceCell<VkRenderPass>,
+    pipeline_layout: OnceCell<VkPipelineLayout>,
+    graphics_pipeline: OnceCell<VkPipeline>,
 }
 
 impl VulkanApi {
@@ -146,6 +216,8 @@ impl VulkanApi {
             swapchain_extent: OnceCell::new(),
             swapchain_image_views: OnceCell::new(),
             render_pass: OnceCell::new(),
+            pipeline_layout: OnceCell::new(),
+            graphics_pipeline: OnceCell::new(),
         }
     }
 
@@ -1022,7 +1094,278 @@ impl VulkanApi {
             .set(render_pass)
             .expect("Render pass can not be initialized!");
     }
-    fn _create_graphics_pipeline(&self) {}
+    fn _create_graphics_pipeline(&self) {
+        if debug_mode() {
+            println!("Creating graphics pipeline");
+        }
+
+        let vert_shader_code: Vec<c_char> = self._read_file("src/shaders/shader.vert.spv");
+        let frag_shader_code: Vec<c_char> = self._read_file("src/shaders/shader.frag.spv");
+
+        let vert_shader_module: VkShaderModule = self._create_shader_module(&vert_shader_code);
+        let frag_shader_module: VkShaderModule = self._create_shader_module(&frag_shader_code);
+
+        let queue_name = CString::new("main").expect("CString::new failed");
+        let vert_shader_stage_info: VkPipelineShaderStageCreateInfo =
+            VkPipelineShaderStageCreateInfo {
+                sType: VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                stage: VK_SHADER_STAGE_VERTEX_BIT,
+                module: vert_shader_module,
+                pName: queue_name.as_ptr(),
+                pSpecializationInfo: std::ptr::null(),
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+        let frag_shader_stage_info: VkPipelineShaderStageCreateInfo =
+            VkPipelineShaderStageCreateInfo {
+                sType: VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                stage: VK_SHADER_STAGE_FRAGMENT_BIT,
+                module: frag_shader_module,
+                pName: queue_name.as_ptr(),
+                pSpecializationInfo: std::ptr::null(),
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+        let shader_stages: Vec<VkPipelineShaderStageCreateInfo> =
+            vec![vert_shader_stage_info, frag_shader_stage_info];
+
+        let vertex_input_info: VkPipelineVertexInputStateCreateInfo =
+            VkPipelineVertexInputStateCreateInfo {
+                sType: VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+                vertexBindingDescriptionCount: 0,
+                pVertexBindingDescriptions: std::ptr::null(),
+                vertexAttributeDescriptionCount: 0,
+                pVertexAttributeDescriptions: std::ptr::null(),
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+        let input_assembly: VkPipelineInputAssemblyStateCreateInfo =
+            VkPipelineInputAssemblyStateCreateInfo {
+                sType: VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+                topology: VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+                primitiveRestartEnable: VK_FALSE,
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+        let swapchain_extent: VkExtent2D = *self
+            .swapchain_extent
+            .get()
+            .expect("Swapchain extent is null");
+
+        let viewport: VkViewport = VkViewport {
+            x: 0.0,
+            y: 0.0,
+            width: swapchain_extent.width as c_float,
+            height: swapchain_extent.height as c_float,
+            minDepth: 0.0,
+            maxDepth: 1.0,
+        };
+
+        let scissor: VkRect2D = VkRect2D {
+            offset: VkOffset2D { x: 0, y: 0 },
+            extent: swapchain_extent,
+        };
+
+        let viewport_state: VkPipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo {
+            sType: VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+            viewportCount: 1,
+            pViewports: &viewport,
+            scissorCount: 1,
+            pScissors: &scissor,
+            pNext: std::ptr::null(),
+            flags: 0,
+        };
+
+        let rasterizer: VkPipelineRasterizationStateCreateInfo =
+            VkPipelineRasterizationStateCreateInfo {
+                sType: VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+                depthClampEnable: VK_FALSE,
+                rasterizerDiscardEnable: VK_FALSE,
+                polygonMode: VK_POLYGON_MODE_FILL,
+                lineWidth: 1.0,
+                cullMode: VK_CULL_MODE_BACK_BIT as u32,
+                frontFace: VK_FRONT_FACE_CLOCKWISE,
+                depthBiasEnable: VK_FALSE,
+                depthBiasConstantFactor: 0.0,
+                depthBiasClamp: 0.0,
+                depthBiasSlopeFactor: 0.0,
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+        let multisampling: VkPipelineMultisampleStateCreateInfo =
+            VkPipelineMultisampleStateCreateInfo {
+                sType: VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+                sampleShadingEnable: VK_FALSE,
+                rasterizationSamples: VK_SAMPLE_COUNT_1_BIT,
+                minSampleShading: 1.0,
+                pSampleMask: std::ptr::null(),
+                alphaToCoverageEnable: VK_FALSE,
+                alphaToOneEnable: VK_FALSE,
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+        let color_white_mask_bit_or: u32 = VK_COLOR_COMPONENT_R_BIT as u32
+            | VK_COLOR_COMPONENT_G_BIT as u32
+            | VK_COLOR_COMPONENT_B_BIT as u32
+            | VK_COLOR_COMPONENT_A_BIT as u32;
+
+        let color_blend_attachment: VkPipelineColorBlendAttachmentState =
+            VkPipelineColorBlendAttachmentState {
+                colorWriteMask: color_white_mask_bit_or,
+                blendEnable: VK_FALSE,
+                srcColorBlendFactor: VK_BLEND_FACTOR_SRC_ALPHA,
+                dstColorBlendFactor: VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+                colorBlendOp: VK_BLEND_OP_ADD,
+                srcAlphaBlendFactor: VK_BLEND_FACTOR_ONE,
+                dstAlphaBlendFactor: VK_BLEND_FACTOR_ZERO,
+                alphaBlendOp: VK_BLEND_OP_ADD,
+            };
+
+        let color_blending: VkPipelineColorBlendStateCreateInfo =
+            VkPipelineColorBlendStateCreateInfo {
+                sType: VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+                logicOpEnable: VK_FALSE,
+                logicOp: VK_LOGIC_OP_COPY,
+                attachmentCount: 1,
+                pAttachments: &color_blend_attachment,
+                blendConstants: [0.0, 0.0, 0.0, 0.0],
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+        let dynamic_states: Vec<VkDynamicState> =
+            vec![VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH];
+
+        let dynamic_state: VkPipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo {
+            sType: VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+            dynamicStateCount: dynamic_states.len() as u32,
+            pDynamicStates: dynamic_states.as_ptr(),
+            pNext: std::ptr::null(),
+            flags: 0,
+        };
+
+        let pipeline_layout_info: VkPipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo {
+            sType: VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+            setLayoutCount: 0,
+            pSetLayouts: std::ptr::null(),
+            pushConstantRangeCount: 0,
+            pPushConstantRanges: std::ptr::null(),
+            pNext: std::ptr::null(),
+            flags: 0,
+        };
+
+        let mut pipeline_layout: VkPipelineLayout = unsafe { std::mem::zeroed() };
+        let result = vk_create_pipeline_layout(
+            *self.device.get().expect("Device is null"),
+            &pipeline_layout_info,
+            std::ptr::null(),
+            &mut pipeline_layout,
+        );
+        if result != VK_SUCCESS {
+            panic!("Failed to create pipeline layout!");
+        }
+        self.pipeline_layout
+            .set(pipeline_layout)
+            .expect("Pipeline layout can not be initialized!");
+
+        let graphics_pipeline_info: VkGraphicsPipelineCreateInfo = VkGraphicsPipelineCreateInfo {
+            sType: VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+            stageCount: shader_stages.len() as u32,
+            pStages: shader_stages.as_ptr(),
+            pVertexInputState: &vertex_input_info,
+            pInputAssemblyState: &input_assembly,
+            pViewportState: &viewport_state,
+            pRasterizationState: &rasterizer,
+            pMultisampleState: &multisampling,
+            pDepthStencilState: std::ptr::null(),
+            pColorBlendState: &color_blending,
+            pDynamicState: &dynamic_state,
+            layout: *self.pipeline_layout.get().expect("Pipeline layout is null"),
+            renderPass: *self.render_pass.get().expect("Render pass is null"),
+            subpass: 0,
+            basePipelineHandle: std::ptr::null_mut(),
+            basePipelineIndex: -1,
+            pTessellationState: std::ptr::null(),
+            pNext: std::ptr::null(),
+            flags: 0,
+        };
+
+        let mut graphics_pipeline: VkPipeline = unsafe { std::mem::zeroed() };
+        let result: VkResult = vk_create_graphics_pipelines(
+            *self.device.get().expect("Device is null"),
+            std::ptr::null_mut(),
+            1,
+            &graphics_pipeline_info,
+            std::ptr::null(),
+            &mut graphics_pipeline,
+        );
+        if result != VK_SUCCESS {
+            panic!("Failed to create graphics pipeline!");
+        }
+        self.graphics_pipeline
+            .set(graphics_pipeline)
+            .expect("Graphics pipeline can not be initialized!");
+
+        vk_destroy_shader_module(
+            *self.device.get().expect("Device is null"),
+            vert_shader_module,
+            std::ptr::null(),
+        );
+        vk_destroy_shader_module(
+            *self.device.get().expect("Device is null"),
+            frag_shader_module,
+            std::ptr::null(),
+        );
+    }
+
+    fn _create_shader_module(&self, code: &Vec<c_char>) -> VkShaderModule {
+        let create_info: VkShaderModuleCreateInfo = VkShaderModuleCreateInfo {
+            sType: VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+            codeSize: code.len() as usize,
+            pCode: code.as_ptr() as *const u32,
+            pNext: std::ptr::null(),
+            flags: 0,
+        };
+
+        let mut shader_module: VkShaderModule = unsafe { std::mem::zeroed() };
+        let result: VkResult = vk_create_shader_module(
+            *self.device.get().expect("Device is null"),
+            &create_info,
+            std::ptr::null(),
+            &mut shader_module,
+        );
+
+        if result != VK_SUCCESS {
+            panic!("Failed to create shader module!");
+        }
+
+        shader_module
+    }
+
+    fn _read_file(&self, filename: &str) -> Vec<c_char> {
+        let mut file: File =
+            File::open(filename).expect(&format!("Failed to open file: {}", filename));
+        let mut content: Vec<u8> = Vec::new();
+        file.read_to_end(&mut content)
+            .expect(&format!("Failed to read file: {}", filename));
+
+        let mut result: Vec<c_char> = Vec::with_capacity(content.len());
+        for byte in content {
+            result.push(byte as c_char);
+        }
+
+        if debug_mode() {
+            println!("File {} read successfully", filename);
+        }
+
+        result
+    }
     fn _create_framebuffers(&self) {}
     fn _create_command_pool(&self) {}
     fn _create_command_buffers(&self) {}
@@ -1085,6 +1428,21 @@ impl GraphicApi for VulkanApi {
         if debug_mode() {
             println!("Vulkan cleanup");
         }
+
+        vk_destroy_pipeline(
+            *self.device.get().expect("Device is null"),
+            *self
+                .graphics_pipeline
+                .get()
+                .expect("Graphics pipeline is null"),
+            std::ptr::null(),
+        );
+
+        vk_destroy_pipeline_layout(
+            *self.device.get().expect("Device is null"),
+            *self.pipeline_layout.get().expect("Pipeline layout is null"),
+            std::ptr::null(),
+        );
 
         vk_destroy_render_pass(
             *self.device.get().expect("Device is null"),
