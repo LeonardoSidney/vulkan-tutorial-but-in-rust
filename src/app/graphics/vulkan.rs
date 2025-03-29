@@ -12,11 +12,35 @@ use crate::glfw::{
 };
 use crate::utils::debug_mode;
 use crate::vulkan::{
-    vk_bit_message_severity, vk_bit_message_type, vk_create_device, vk_create_instance, vk_create_swapchain_khr, vk_destroy_device, vk_destroy_instance, vk_destroy_surface_khr, vk_destroy_swapchain_khr, vk_enumerate_device_extension_properties, vk_enumerate_instance_extension_properties, vk_enumerate_instance_layer_properties, vk_enumerate_physical_devices, vk_get_device_queue, vk_get_instance_proc_addr, vk_get_physical_device_features, vk_get_physical_device_properties, vk_get_physical_device_queue_family_properties, vk_get_physical_device_surface_capabilities_khr, vk_get_physical_device_surface_formats_khr, vk_get_physical_device_surface_present_modes_khr, vk_get_physical_device_surface_support_khr, vk_get_swapchain_images_khr, PFN_vkCreateDebugUtilsMessengerEXT, PFN_vkDebugUtilsMessengerCallbackEXT, PFN_vkDestroyDebugUtilsMessengerEXT, VkAllocationCallbacks, VkApplicationInfo, VkBool32, VkColorSpaceKHR, VkCompositeAlphaFlagBitsKHR, VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT, VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo, VkExtensionProperties, VkExtent2D, VkFormat, VkImage, VkImageUsageFlagBits, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties, VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties, VkPresentModeKHR, VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkResult, VkSharingMode, VkStructureType, VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR, VkSwapchainKHR, VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE, VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_TRUE
+    vk_bit_message_severity, vk_bit_message_type, vk_create_device, vk_create_image_view,
+    vk_create_instance, vk_create_swapchain_khr, vk_destroy_device, vk_destroy_image_view,
+    vk_destroy_instance, vk_destroy_surface_khr, vk_destroy_swapchain_khr,
+    vk_enumerate_device_extension_properties, vk_enumerate_instance_extension_properties,
+    vk_enumerate_instance_layer_properties, vk_enumerate_physical_devices, vk_get_device_queue,
+    vk_get_instance_proc_addr, vk_get_physical_device_features, vk_get_physical_device_properties,
+    vk_get_physical_device_queue_family_properties,
+    vk_get_physical_device_surface_capabilities_khr, vk_get_physical_device_surface_formats_khr,
+    vk_get_physical_device_surface_present_modes_khr, vk_get_physical_device_surface_support_khr,
+    vk_get_swapchain_images_khr, PFN_vkCreateDebugUtilsMessengerEXT,
+    PFN_vkDebugUtilsMessengerCallbackEXT, PFN_vkDestroyDebugUtilsMessengerEXT,
+    VkAllocationCallbacks, VkApplicationInfo, VkBool32, VkColorSpaceKHR, VkComponentMapping,
+    VkComponentSwizzle, VkCompositeAlphaFlagBitsKHR, VkDebugUtilsMessageSeverityFlagBitsEXT,
+    VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT,
+    VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT,
+    VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo,
+    VkExtensionProperties, VkExtent2D, VkFormat, VkImage, VkImageAspectFlagBits,
+    VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo,
+    VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties,
+    VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties, VkPresentModeKHR,
+    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkResult, VkSharingMode, VkStructureType,
+    VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR,
+    VkSwapchainKHR, VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE,
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_TRUE,
 };
 use crate::{glfw::GLFWwindow, utils};
 
 use VkColorSpaceKHR::VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+use VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
 use VkCompositeAlphaFlagBitsKHR::VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 use VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 use VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
@@ -25,7 +49,9 @@ use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 use VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
+use VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 use VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+use VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
 use VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR;
 use VkPresentModeKHR::VK_PRESENT_MODE_MAILBOX_KHR;
 use VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT;
@@ -34,6 +60,7 @@ use VkSharingMode::VK_SHARING_MODE_CONCURRENT;
 use VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
 use VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 
 pub extern "C" fn debug_callback(
@@ -99,6 +126,7 @@ pub struct VulkanApi {
     swapchain_images: OnceCell<Vec<VkImage>>,
     swapchain_image_format: OnceCell<VkFormat>,
     swapchain_extent: OnceCell<VkExtent2D>,
+    swapchain_image_views: OnceCell<Vec<VkImageView>>,
 }
 
 impl VulkanApi {
@@ -126,6 +154,7 @@ impl VulkanApi {
             swapchain_images: OnceCell::new(),
             swapchain_image_format: OnceCell::new(),
             swapchain_extent: OnceCell::new(),
+            swapchain_image_views: OnceCell::new(),
         }
     }
 
@@ -874,6 +903,71 @@ impl VulkanApi {
 
         avaliable_formats[0]
     }
+
+    fn _create_image_views(&self) {
+        let swapchain_images: &Vec<VkImage> = self
+            .swapchain_images
+            .get()
+            .expect("Swapchain images is null");
+        let mut swapchain_image_views: Vec<VkImageView> =
+            Vec::with_capacity(swapchain_images.len());
+        unsafe {
+            swapchain_image_views.set_len(swapchain_images.len());
+        }
+
+        let mut i = 0;
+        for swapchain_image in swapchain_images {
+            let create_info: VkImageViewCreateInfo = VkImageViewCreateInfo {
+                sType: VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                image: *swapchain_image,
+                viewType: VK_IMAGE_VIEW_TYPE_2D,
+                format: *self
+                    .swapchain_image_format
+                    .get()
+                    .expect("Swapchain image format is null"),
+                components: VkComponentMapping {
+                    r: VK_COMPONENT_SWIZZLE_IDENTITY,
+                    g: VK_COMPONENT_SWIZZLE_IDENTITY,
+                    b: VK_COMPONENT_SWIZZLE_IDENTITY,
+                    a: VK_COMPONENT_SWIZZLE_IDENTITY,
+                },
+                subresourceRange: VkImageSubresourceRange {
+                    aspectMask: VK_IMAGE_ASPECT_COLOR_BIT as u32,
+                    baseMipLevel: 0,
+                    levelCount: 1,
+                    baseArrayLayer: 0,
+                    layerCount: 1,
+                },
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+            let result = vk_create_image_view(
+                *self.device.get().expect("Device is null"),
+                &create_info,
+                std::ptr::null(),
+                &mut swapchain_image_views[i],
+            );
+            if result != VK_SUCCESS {
+                panic!("Failed to create image views!");
+            }
+
+            i = i + 1;
+        }
+
+        if debug_mode() {
+            println!("Vulkan swapchain image views created");
+        }
+        self.swapchain_image_views
+            .set(swapchain_image_views)
+            .expect("Failed to set swapchain image views");
+    }
+    fn _create_render_pass(&self) {}
+    fn _create_graphics_pipeline(&self) {}
+    fn _create_framebuffers(&self) {}
+    fn _create_command_pool(&self) {}
+    fn _create_command_buffers(&self) {}
+    fn _create_sync_objects(&self) {}
 }
 
 impl GraphicApi for VulkanApi {
@@ -918,11 +1012,30 @@ impl GraphicApi for VulkanApi {
         self._pick_physical_device();
         self._create_logical_device();
         self._create_swap_chain();
+        self._create_image_views();
+        self._create_render_pass();
+        self._create_graphics_pipeline();
+        self._create_framebuffers();
+        self._create_command_pool();
+        self._create_command_buffers();
+        self._create_sync_objects();
     }
 
     fn cleanup(&self) {
         if debug_mode() {
             println!("Vulkan cleanup");
+        }
+
+        let swapchain_image_views: &Vec<VkImageView> = self
+            .swapchain_image_views
+            .get()
+            .expect("Swapchain image views is null");
+        for swapchain_image_view in swapchain_image_views {
+            vk_destroy_image_view(
+                *self.device.get().expect("Device is null"),
+                *swapchain_image_view,
+                std::ptr::null(),
+            );
         }
 
         vk_destroy_swapchain_khr(

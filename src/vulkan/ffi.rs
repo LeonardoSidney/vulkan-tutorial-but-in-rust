@@ -123,6 +123,17 @@ unsafe extern "C" {
         swapchain: VkSwapchainKHR,
         pAllocator: *const VkAllocationCallbacks,
     ) -> c_void;
+    pub unsafe fn vkCreateImageView(
+        device: VkDevice,
+        pCreateInfo: *const VkImageViewCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pView: *mut VkImageView,
+    ) -> VkResult;
+    pub unsafe fn vkDestroyImageView(
+        device: VkDevice,
+        imageView: VkImageView,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
 }
 
 //#define VK_MAKE_API_VERSION(variant, major, minor, patch) ((((uint32_t)(variant)) << 29U) | (((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))

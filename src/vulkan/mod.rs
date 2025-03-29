@@ -6,18 +6,19 @@ use std::ffi::c_void;
 pub use ffi::{
     PFN_vkCreateDebugUtilsMessengerEXT, PFN_vkDebugUtilsMessengerCallbackEXT,
     PFN_vkDestroyDebugUtilsMessengerEXT, VkAllocationCallbacks, VkApplicationInfo, VkBool32,
-    VkColorSpaceKHR, VkCompositeAlphaFlagBitsKHR, VkDebugUtilsMessageSeverityFlagBitsEXT,
-    VkDebugUtilsMessageSeverityFlagsEXT, VkDebugUtilsMessageTypeFlagBitsEXT,
-    VkDebugUtilsMessageTypeFlagsEXT, VkDebugUtilsMessengerCallbackDataEXT,
-    VkDebugUtilsMessengerCreateInfoEXT, VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo,
-    VkDeviceQueueCreateInfo, VkExtensionProperties, VkExtent2D, VkFormat, VkImage,
-    VkImageUsageFlagBits, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo,
-    VkLayerProperties, VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties,
-    VkPresentModeKHR, VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkResult, VkSharingMode,
-    VkStructureType, VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR,
-    VkSwapchainCreateInfoKHR, VkSwapchainKHR, VK_API_VERSION_1_0,
-    VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE, VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_MAKE_API_VERSION, VK_TRUE,
+    VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle, VkCompositeAlphaFlagBitsKHR,
+    VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageSeverityFlagsEXT,
+    VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT,
+    VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT,
+    VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo,
+    VkExtensionProperties, VkExtent2D, VkFormat, VkImage, VkImageAspectFlagBits,
+    VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo,
+    VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties,
+    VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties, VkPresentModeKHR,
+    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkResult, VkSharingMode, VkStructureType,
+    VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR,
+    VkSwapchainKHR, VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE,
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_TRUE,
 };
 
 pub fn vk_enumerate_instance_layer_properties(
@@ -273,4 +274,21 @@ pub fn vk_destroy_swapchain_khr(
     p_allocator: *const VkAllocationCallbacks,
 ) -> c_void {
     unsafe { ffi::vkDestroySwapchainKHR(device, swapchain, p_allocator) }
+}
+
+pub fn vk_create_image_view(
+    device: VkDevice,
+    p_create_info: *const VkImageViewCreateInfo,
+    p_allocator: *const VkAllocationCallbacks,
+    p_view: *mut VkImageView,
+) -> VkResult {
+    unsafe { ffi::vkCreateImageView(device, p_create_info, p_allocator, p_view) }
+}
+
+pub fn vk_destroy_image_view(
+    device: VkDevice,
+    image_view: VkImageView,
+    p_allocator: *const VkAllocationCallbacks,
+) -> c_void {
+    unsafe { ffi::vkDestroyImageView(device, image_view, p_allocator) }
 }
