@@ -134,6 +134,17 @@ unsafe extern "C" {
         imageView: VkImageView,
         pAllocator: *const VkAllocationCallbacks,
     ) -> c_void;
+    pub unsafe fn vkCreateRenderPass(
+        device: VkDevice,
+        pCreateInfo: *const VkRenderPassCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pRenderPass: *mut VkRenderPass,
+    ) -> VkResult;
+    pub unsafe fn vkDestroyRenderPass(
+        device: VkDevice,
+        renderPass: VkRenderPass,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
 }
 
 //#define VK_MAKE_API_VERSION(variant, major, minor, patch) ((((uint32_t)(variant)) << 29U) | (((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))

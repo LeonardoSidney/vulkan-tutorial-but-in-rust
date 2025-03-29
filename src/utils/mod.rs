@@ -1,6 +1,5 @@
 #[cfg(debug_assertions)]
 pub fn debug_mode() -> bool {
-    println!("Debugging enabled");
     true
 }
 

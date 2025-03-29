@@ -5,20 +5,23 @@ use std::ffi::c_void;
 
 pub use ffi::{
     PFN_vkCreateDebugUtilsMessengerEXT, PFN_vkDebugUtilsMessengerCallbackEXT,
-    PFN_vkDestroyDebugUtilsMessengerEXT, VkAllocationCallbacks, VkApplicationInfo, VkBool32,
-    VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle, VkCompositeAlphaFlagBitsKHR,
-    VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageSeverityFlagsEXT,
-    VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT,
-    VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT,
-    VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo,
-    VkExtensionProperties, VkExtent2D, VkFormat, VkImage, VkImageAspectFlagBits,
-    VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo,
-    VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties,
-    VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties, VkPresentModeKHR,
-    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkResult, VkSharingMode, VkStructureType,
+    PFN_vkDestroyDebugUtilsMessengerEXT, VkAccessFlagBits, VkAllocationCallbacks,
+    VkApplicationInfo, VkAttachmentDescription, VkAttachmentLoadOp, VkAttachmentReference,
+    VkAttachmentStoreOp, VkBool32, VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle,
+    VkCompositeAlphaFlagBitsKHR, VkDebugUtilsMessageSeverityFlagBitsEXT,
+    VkDebugUtilsMessageSeverityFlagsEXT, VkDebugUtilsMessageTypeFlagBitsEXT,
+    VkDebugUtilsMessageTypeFlagsEXT, VkDebugUtilsMessengerCallbackDataEXT,
+    VkDebugUtilsMessengerCreateInfoEXT, VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo,
+    VkDeviceQueueCreateInfo, VkExtensionProperties, VkExtent2D, VkFormat, VkImage,
+    VkImageAspectFlagBits, VkImageLayout, VkImageSubresourceRange, VkImageUsageFlagBits,
+    VkImageView, VkImageViewCreateInfo, VkImageViewType, VkInstance, VkInstanceCreateFlags,
+    VkInstanceCreateInfo, VkLayerProperties, VkPhysicalDevice, VkPhysicalDeviceFeatures,
+    VkPhysicalDeviceProperties, VkPipelineBindPoint, VkPipelineStageFlagBits, VkPresentModeKHR,
+    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkResult, VkSampleCountFlagBits,
+    VkSharingMode, VkStructureType, VkSubpassDependency, VkSubpassDescription,
     VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR,
     VkSwapchainKHR, VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE,
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_TRUE,
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_SUBPASS_EXTERNAL, VK_TRUE,VkRenderPassCreateInfo, VkRenderPass
 };
 
 pub fn vk_enumerate_instance_layer_properties(
@@ -291,4 +294,21 @@ pub fn vk_destroy_image_view(
     p_allocator: *const VkAllocationCallbacks,
 ) -> c_void {
     unsafe { ffi::vkDestroyImageView(device, image_view, p_allocator) }
+}
+
+pub fn vk_create_render_pass(
+    device: VkDevice,
+    p_create_info: *const VkRenderPassCreateInfo,
+    p_allocator: *const VkAllocationCallbacks,
+    p_render_pass: *mut VkRenderPass,
+) -> VkResult {
+    unsafe { ffi::vkCreateRenderPass(device, p_create_info, p_allocator, p_render_pass) }
+}
+
+pub fn vk_destroy_render_pass(
+    device: VkDevice,
+    render_pass: VkRenderPass,
+    p_allocator: *const VkAllocationCallbacks,
+) -> c_void {
+    unsafe { ffi::vkDestroyRenderPass(device, render_pass, p_allocator) }
 }

@@ -12,33 +12,15 @@ use crate::glfw::{
 };
 use crate::utils::debug_mode;
 use crate::vulkan::{
-    vk_bit_message_severity, vk_bit_message_type, vk_create_device, vk_create_image_view,
-    vk_create_instance, vk_create_swapchain_khr, vk_destroy_device, vk_destroy_image_view,
-    vk_destroy_instance, vk_destroy_surface_khr, vk_destroy_swapchain_khr,
-    vk_enumerate_device_extension_properties, vk_enumerate_instance_extension_properties,
-    vk_enumerate_instance_layer_properties, vk_enumerate_physical_devices, vk_get_device_queue,
-    vk_get_instance_proc_addr, vk_get_physical_device_features, vk_get_physical_device_properties,
-    vk_get_physical_device_queue_family_properties,
-    vk_get_physical_device_surface_capabilities_khr, vk_get_physical_device_surface_formats_khr,
-    vk_get_physical_device_surface_present_modes_khr, vk_get_physical_device_surface_support_khr,
-    vk_get_swapchain_images_khr, PFN_vkCreateDebugUtilsMessengerEXT,
-    PFN_vkDebugUtilsMessengerCallbackEXT, PFN_vkDestroyDebugUtilsMessengerEXT,
-    VkAllocationCallbacks, VkApplicationInfo, VkBool32, VkColorSpaceKHR, VkComponentMapping,
-    VkComponentSwizzle, VkCompositeAlphaFlagBitsKHR, VkDebugUtilsMessageSeverityFlagBitsEXT,
-    VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT,
-    VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT,
-    VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo,
-    VkExtensionProperties, VkExtent2D, VkFormat, VkImage, VkImageAspectFlagBits,
-    VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo,
-    VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties,
-    VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties, VkPresentModeKHR,
-    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkResult, VkSharingMode, VkStructureType,
-    VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR,
-    VkSwapchainKHR, VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE,
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_TRUE,
+    vk_bit_message_severity, vk_bit_message_type, vk_create_device, vk_create_image_view, vk_create_instance, vk_create_render_pass, vk_create_swapchain_khr, vk_destroy_device, vk_destroy_image_view, vk_destroy_instance, vk_destroy_render_pass, vk_destroy_surface_khr, vk_destroy_swapchain_khr, vk_enumerate_device_extension_properties, vk_enumerate_instance_extension_properties, vk_enumerate_instance_layer_properties, vk_enumerate_physical_devices, vk_get_device_queue, vk_get_instance_proc_addr, vk_get_physical_device_features, vk_get_physical_device_properties, vk_get_physical_device_queue_family_properties, vk_get_physical_device_surface_capabilities_khr, vk_get_physical_device_surface_formats_khr, vk_get_physical_device_surface_present_modes_khr, vk_get_physical_device_surface_support_khr, vk_get_swapchain_images_khr, PFN_vkCreateDebugUtilsMessengerEXT, PFN_vkDebugUtilsMessengerCallbackEXT, PFN_vkDestroyDebugUtilsMessengerEXT, VkAccessFlagBits, VkAllocationCallbacks, VkApplicationInfo, VkAttachmentDescription, VkAttachmentLoadOp, VkAttachmentReference, VkAttachmentStoreOp, VkBool32, VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle, VkCompositeAlphaFlagBitsKHR, VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT, VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo, VkExtensionProperties, VkExtent2D, VkFormat, VkImage, VkImageAspectFlagBits, VkImageLayout, VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo, VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties, VkPhysicalDevice, VkPhysicalDeviceFeatures, VkPhysicalDeviceProperties, VkPipelineBindPoint, VkPipelineStageFlagBits, VkPresentModeKHR, VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkRenderPass, VkRenderPassCreateInfo, VkResult, VkSampleCountFlagBits, VkSharingMode, VkStructureType, VkSubpassDependency, VkSubpassDescription, VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR, VkSwapchainKHR, VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE, VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_SUBPASS_EXTERNAL, VK_TRUE
 };
 use crate::{glfw::GLFWwindow, utils};
 
+use VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+use VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR;
+use VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+use VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE;
+use VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE;
 use VkColorSpaceKHR::VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 use VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
 use VkCompositeAlphaFlagBitsKHR::VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -50,17 +32,24 @@ use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 use VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
 use VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+use VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+use VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+use VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
 use VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 use VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+use VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS;
+use VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 use VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR;
 use VkPresentModeKHR::VK_PRESENT_MODE_MAILBOX_KHR;
 use VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT;
 use VkResult::VK_SUCCESS;
+use VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
 use VkSharingMode::VK_SHARING_MODE_CONCURRENT;
 use VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
 use VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+use VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 use VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 
 pub extern "C" fn debug_callback(
@@ -127,6 +116,7 @@ pub struct VulkanApi {
     swapchain_image_format: OnceCell<VkFormat>,
     swapchain_extent: OnceCell<VkExtent2D>,
     swapchain_image_views: OnceCell<Vec<VkImageView>>,
+    render_pass: OnceCell<VkRenderPass>,
 }
 
 impl VulkanApi {
@@ -155,6 +145,7 @@ impl VulkanApi {
             swapchain_image_format: OnceCell::new(),
             swapchain_extent: OnceCell::new(),
             swapchain_image_views: OnceCell::new(),
+            render_pass: OnceCell::new(),
         }
     }
 
@@ -680,8 +671,6 @@ impl VulkanApi {
 
         // let device_extensions: Vec<c_char> = Vec::new();
 
-        println!("queue_create_infos: >> {:?}", queue_create_infos);
-
         let mut enabled_layer_count: u32 = 0;
         let mut pp_enabled_layer_names: *const *const i8 = std::ptr::null();
         if self._enable_validation_layers() {
@@ -962,7 +951,77 @@ impl VulkanApi {
             .set(swapchain_image_views)
             .expect("Failed to set swapchain image views");
     }
-    fn _create_render_pass(&self) {}
+    fn _create_render_pass(&self) {
+        let color_attachment: VkAttachmentDescription = VkAttachmentDescription {
+            format: *self
+                .swapchain_image_format
+                .get()
+                .expect("Swapchain image format is null"),
+            samples: VK_SAMPLE_COUNT_1_BIT,
+            loadOp: VK_ATTACHMENT_LOAD_OP_CLEAR,
+            storeOp: VK_ATTACHMENT_STORE_OP_STORE,
+            stencilLoadOp: VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            stencilStoreOp: VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            initialLayout: VK_IMAGE_LAYOUT_UNDEFINED,
+            finalLayout: VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+            flags: 0,
+        };
+
+        let color_attachment_ref: VkAttachmentReference = VkAttachmentReference {
+            attachment: 0,
+            layout: VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        };
+
+        let subpass: VkSubpassDescription = VkSubpassDescription {
+            pipelineBindPoint: VK_PIPELINE_BIND_POINT_GRAPHICS,
+            colorAttachmentCount: 1,
+            pColorAttachments: &color_attachment_ref,
+            inputAttachmentCount: 0,
+            pInputAttachments: std::ptr::null(),
+            pResolveAttachments: std::ptr::null(),
+            pDepthStencilAttachment: std::ptr::null(),
+            preserveAttachmentCount: 0,
+            pPreserveAttachments: std::ptr::null(),
+            flags: 0,
+        };
+
+        let dependency: VkSubpassDependency = VkSubpassDependency {
+            srcSubpass: VK_SUBPASS_EXTERNAL as u32,
+            dstSubpass: 0,
+            srcStageMask: VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT as u32,
+            srcAccessMask: 0,
+            dstStageMask: VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT as u32,
+            dstAccessMask: VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT as u32,
+            dependencyFlags: 0,
+        };
+
+        let render_pass_info: VkRenderPassCreateInfo = VkRenderPassCreateInfo {
+            sType: VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+            attachmentCount: 1,
+            pAttachments: &color_attachment,
+            subpassCount: 1,
+            pSubpasses: &subpass,
+            dependencyCount: 1,
+            pDependencies: &dependency,
+            pNext: std::ptr::null(),
+            flags: 0,
+        };
+
+        let mut render_pass: VkRenderPass = unsafe { std::mem::zeroed() };
+        let result: VkResult = vk_create_render_pass(
+            *self.device.get().expect("Device is null"),
+            &render_pass_info,
+            std::ptr::null(),
+            &mut render_pass,
+        );
+        if result != VK_SUCCESS {
+            panic!("Failed to create render pass!");
+        }
+
+        self.render_pass
+            .set(render_pass)
+            .expect("Render pass can not be initialized!");
+    }
     fn _create_graphics_pipeline(&self) {}
     fn _create_framebuffers(&self) {}
     fn _create_command_pool(&self) {}
@@ -973,6 +1032,7 @@ impl VulkanApi {
 impl GraphicApi for VulkanApi {
     fn init_window(&self) -> Window {
         if debug_mode() {
+            println!("debug_mode is enabled");
             println!(
                 "Vulkan window initialized with width: {} and height: {}",
                 self.width, self.height
@@ -1025,6 +1085,12 @@ impl GraphicApi for VulkanApi {
         if debug_mode() {
             println!("Vulkan cleanup");
         }
+
+        vk_destroy_render_pass(
+            *self.device.get().expect("Device is null"),
+            *self.render_pass.get().expect("Render pass is null"),
+            std::ptr::null(),
+        );
 
         let swapchain_image_views: &Vec<VkImageView> = self
             .swapchain_image_views
