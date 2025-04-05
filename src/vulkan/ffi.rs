@@ -116,7 +116,7 @@ unsafe extern "C" {
         device: VkDevice,
         pSwapchain: VkSwapchainKHR,
         pSwapchainImageCount: *mut u32,
-        pSwapchainImages: *mut VkImage
+        pSwapchainImages: *mut VkImage,
     ) -> VkResult;
     pub unsafe fn vkDestroySwapchainKHR(
         device: VkDevice,
@@ -180,6 +180,125 @@ unsafe extern "C" {
         pipeline: VkPipeline,
         pAllocator: *const VkAllocationCallbacks,
     ) -> c_void;
+    pub unsafe fn vkCreateFramebuffer(
+        device: VkDevice,
+        pCreateInfo: *const VkFramebufferCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pFramebuffer: *mut VkFramebuffer,
+    ) -> VkResult;
+    pub unsafe fn vkDestroyFramebuffer(
+        device: VkDevice,
+        framebuffer: VkFramebuffer,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
+    pub unsafe fn vkCreateCommandPool(
+        device: VkDevice,
+        pCreateInfo: *const VkCommandPoolCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pCommandPool: *mut VkCommandPool,
+    ) -> VkResult;
+    pub unsafe fn vkDestroyCommandPool(
+        device: VkDevice,
+        commandPool: VkCommandPool,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
+    pub unsafe fn vkAllocateCommandBuffers(
+        device: VkDevice,
+        pAllocateInfo: *const VkCommandBufferAllocateInfo,
+        pCommandBuffers: *mut VkCommandBuffer,
+    ) -> VkResult;
+    pub unsafe fn vkCreateSemaphore(
+        device: VkDevice,
+        pCreateInfo: *const VkSemaphoreCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pSemaphore: *mut VkSemaphore,
+    ) -> VkResult;
+    pub unsafe fn vkDestroySemaphore(
+        device: VkDevice,
+        semaphore: VkSemaphore,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
+    pub unsafe fn vkCreateFence(
+        device: VkDevice,
+        pCreateInfo: *const VkFenceCreateInfo,
+        pAllocator: *const VkAllocationCallbacks,
+        pFence: *mut VkFence,
+    ) -> VkResult;
+    pub unsafe fn vkDestroyFence(
+        device: VkDevice,
+        fence: VkFence,
+        pAllocator: *const VkAllocationCallbacks,
+    ) -> c_void;
+    pub unsafe fn vkDeviceWaitIdle(device: VkDevice) -> VkResult;
+    pub unsafe fn vkWaitForFences(
+        device: VkDevice,
+        fenceCount: u32,
+        pFences: *const VkFence,
+        waitAll: VkBool32,
+        timeout: u64,
+    ) -> VkResult;
+    pub unsafe fn vkResetFences(
+        device: VkDevice,
+        fenceCount: u32,
+        pFences: *const VkFence,
+    ) -> VkResult;
+    pub unsafe fn vkAcquireNextImageKHR(
+        device: VkDevice,
+        swapchain: VkSwapchainKHR,
+        timeout: u64,
+        semaphore: VkSemaphore,
+        fence: VkFence,
+        pImageIndex: *mut u32,
+    ) -> VkResult;
+    pub unsafe fn vkResetCommandBuffer(
+        commandBuffer: VkCommandBuffer,
+        flags: VkCommandBufferResetFlags,
+    ) -> VkResult;
+    pub unsafe fn vkBeginCommandBuffer(
+        commandBuffer: VkCommandBuffer,
+        pBeginInfo: *const VkCommandBufferBeginInfo,
+    ) -> VkResult;
+    pub unsafe fn vkCmdBeginRenderPass(
+        commandBuffer: VkCommandBuffer,
+        pRenderPassBegin: *const VkRenderPassBeginInfo,
+        contents: VkSubpassContents,
+    ) -> c_void;
+    pub unsafe fn vkCmdBindPipeline(
+        commandBuffer: VkCommandBuffer,
+        pipelineBindPoint: VkPipelineBindPoint,
+        pipeline: VkPipeline,
+    ) -> c_void;
+    pub unsafe fn vkCmdSetViewport(
+        commandBuffer: VkCommandBuffer,
+        firstViewport: u32,
+        viewportCount: u32,
+        pViewports: *const VkViewport,
+    ) -> c_void;
+    pub unsafe fn vkCmdSetScissor(
+        commandBuffer: VkCommandBuffer,
+        firstScissor: u32,
+        scissorCount: u32,
+        pScissors: *const VkRect2D,
+    ) -> c_void;
+    pub unsafe fn vkCmdDraw(
+        commandBuffer: VkCommandBuffer,
+        vertexCount: u32,
+        instanceCount: u32,
+        firstVertex: u32,
+        firstInstance: u32,
+    ) -> c_void;
+    pub unsafe fn vkCmdEndRenderPass(commandBuffer: VkCommandBuffer) -> c_void;
+    pub unsafe fn vkEndCommandBuffer(commandBuffer: VkCommandBuffer) -> VkResult;
+    pub unsafe fn vkQueueSubmit(
+        queue: VkQueue,
+        submitCount: u32,
+        pSubmits: *const VkSubmitInfo,
+        fence: VkFence,
+    ) -> VkResult;
+    pub unsafe fn vkQueuePresentKHR(
+        queue: VkQueue,
+        pPresentInfo: *const VkPresentInfoKHR,
+    ) -> VkResult;
 }
 
 //#define VK_MAKE_API_VERSION(variant, major, minor, patch) ((((uint32_t)(variant)) << 29U) | (((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))

@@ -57,4 +57,16 @@ impl Graphics {
     pub fn pool_events(&self) {
         self.api.pool_events()
     }
+
+    pub fn wait_events(&self) {
+        self.api.wait_events()
+    }
+
+    pub fn draw_frame(&self) {
+        self.api.draw_frame()
+    }
+
+    pub fn wait_device_idle(&self) {
+        self.api.wait_device_idle()
+    }
 }

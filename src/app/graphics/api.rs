@@ -6,6 +6,9 @@ pub trait GraphicApi {
     fn cleanup(&self);
     fn should_close(&self) -> bool;
     fn pool_events(&self);
+    fn wait_events(&self);
+    fn draw_frame(&self);
+    fn wait_device_idle(&self);
 }
 
 pub enum Window {

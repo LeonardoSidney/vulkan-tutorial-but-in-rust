@@ -65,4 +65,16 @@ impl GraphicApi for OpenGLApi {
     fn pool_events(&self) {
         println!("OpenGL pool events");
     }
+
+    fn wait_events(&self) {
+        println!("OpenGL wait events");
+    }
+
+    fn draw_frame(&self) {
+        println!("OpenGL draw frame");
+    }
+
+    fn wait_device_idle(&self) {
+        println!("OpenGL wait device idle");
+    }
 }

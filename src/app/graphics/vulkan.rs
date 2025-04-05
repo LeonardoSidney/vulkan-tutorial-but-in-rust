@@ -14,27 +14,37 @@ use crate::glfw::{
 };
 use crate::utils::debug_mode;
 use crate::vulkan::{
-    vk_bit_message_severity, vk_bit_message_type, vk_create_device, vk_create_graphics_pipelines,
-    vk_create_image_view, vk_create_instance, vk_create_pipeline_layout, vk_create_render_pass,
-    vk_create_shader_module, vk_create_swapchain_khr, vk_destroy_device, vk_destroy_image_view,
-    vk_destroy_instance, vk_destroy_pipeline, vk_destroy_pipeline_layout, vk_destroy_render_pass,
+    vk_acquire_next_image_khr, vk_allocate_command_buffers, vk_begin_command_buffer,
+    vk_bit_message_severity, vk_bit_message_type, vk_cmd_begin_render_pass, vk_cmd_bind_pipeline,
+    vk_cmd_draw, vk_cmd_end_render_pass, vk_cmd_set_scissor, vk_cmd_set_viewport,
+    vk_create_command_pool, vk_create_device, vk_create_fence, vk_create_framebuffer,
+    vk_create_graphics_pipelines, vk_create_image_view, vk_create_instance,
+    vk_create_pipeline_layout, vk_create_render_pass, vk_create_semaphore, vk_create_shader_module,
+    vk_create_swapchain_khr, vk_destroy_command_pool, vk_destroy_device, vk_destroy_fence,
+    vk_destroy_framebuffer, vk_destroy_image_view, vk_destroy_instance, vk_destroy_pipeline,
+    vk_destroy_pipeline_layout, vk_destroy_render_pass, vk_destroy_semaphore,
     vk_destroy_shader_module, vk_destroy_surface_khr, vk_destroy_swapchain_khr,
-    vk_enumerate_device_extension_properties, vk_enumerate_instance_extension_properties,
-    vk_enumerate_instance_layer_properties, vk_enumerate_physical_devices, vk_get_device_queue,
-    vk_get_instance_proc_addr, vk_get_physical_device_features, vk_get_physical_device_properties,
+    vk_device_wait_idle, vk_end_command_buffer, vk_enumerate_device_extension_properties,
+    vk_enumerate_instance_extension_properties, vk_enumerate_instance_layer_properties,
+    vk_enumerate_physical_devices, vk_get_device_queue, vk_get_instance_proc_addr,
+    vk_get_physical_device_features, vk_get_physical_device_properties,
     vk_get_physical_device_queue_family_properties,
     vk_get_physical_device_surface_capabilities_khr, vk_get_physical_device_surface_formats_khr,
     vk_get_physical_device_surface_present_modes_khr, vk_get_physical_device_surface_support_khr,
-    vk_get_swapchain_images_khr, PFN_vkCreateDebugUtilsMessengerEXT,
+    vk_get_swapchain_images_khr, vk_queue_present_khr, vk_queue_submit, vk_reset_command_buffer,
+    vk_reset_fences, vk_wait_for_fences, PFN_vkCreateDebugUtilsMessengerEXT,
     PFN_vkDebugUtilsMessengerCallbackEXT, PFN_vkDestroyDebugUtilsMessengerEXT, VkAccessFlagBits,
     VkAllocationCallbacks, VkApplicationInfo, VkAttachmentDescription, VkAttachmentLoadOp,
     VkAttachmentReference, VkAttachmentStoreOp, VkBlendFactor, VkBlendOp, VkBool32,
-    VkColorComponentFlagBits, VkColorSpaceKHR, VkComponentMapping, VkComponentSwizzle,
+    VkClearColorValue, VkClearValue, VkColorComponentFlagBits, VkColorSpaceKHR, VkCommandBuffer,
+    VkCommandBufferAllocateInfo, VkCommandBufferBeginInfo, VkCommandBufferLevel, VkCommandPool,
+    VkCommandPoolCreateFlagBits, VkCommandPoolCreateInfo, VkComponentMapping, VkComponentSwizzle,
     VkCompositeAlphaFlagBitsKHR, VkCullModeFlagBits, VkDebugUtilsMessageSeverityFlagBitsEXT,
     VkDebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT,
     VkDebugUtilsMessengerCallbackDataEXT, VkDebugUtilsMessengerCreateInfoEXT,
     VkDebugUtilsMessengerEXT, VkDevice, VkDeviceCreateInfo, VkDeviceQueueCreateInfo,
-    VkDynamicState, VkExtensionProperties, VkExtent2D, VkFormat, VkFrontFace,
+    VkDynamicState, VkExtensionProperties, VkExtent2D, VkFence, VkFenceCreateFlagBits,
+    VkFenceCreateInfo, VkFormat, VkFramebuffer, VkFramebufferCreateInfo, VkFrontFace,
     VkGraphicsPipelineCreateInfo, VkImage, VkImageAspectFlagBits, VkImageLayout,
     VkImageSubresourceRange, VkImageUsageFlagBits, VkImageView, VkImageViewCreateInfo,
     VkImageViewType, VkInstance, VkInstanceCreateFlags, VkInstanceCreateInfo, VkLayerProperties,
@@ -43,15 +53,16 @@ use crate::vulkan::{
     VkPipelineColorBlendStateCreateInfo, VkPipelineDynamicStateCreateInfo,
     VkPipelineInputAssemblyStateCreateInfo, VkPipelineLayout, VkPipelineLayoutCreateInfo,
     VkPipelineMultisampleStateCreateInfo, VkPipelineRasterizationStateCreateInfo,
-    VkPipelineShaderStageCreateInfo, VkPipelineStageFlagBits, VkPipelineVertexInputStateCreateInfo,
-    VkPipelineViewportStateCreateInfo, VkPolygonMode, VkPresentModeKHR, VkPrimitiveTopology,
-    VkQueue, VkQueueFamilyProperties, VkQueueFlagBits, VkRect2D, VkRenderPass,
-    VkRenderPassCreateInfo, VkResult, VkSampleCountFlagBits, VkShaderModule,
-    VkShaderModuleCreateInfo, VkShaderStageFlagBits, VkSharingMode, VkStructureType,
-    VkSubpassDependency, VkSubpassDescription, VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR,
-    VkSurfaceKHR, VkSwapchainCreateInfoKHR, VkSwapchainKHR, VkViewport, VK_API_VERSION_1_0,
-    VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE, VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_MAKE_API_VERSION, VK_SUBPASS_EXTERNAL, VK_TRUE,
+    VkPipelineShaderStageCreateInfo, VkPipelineStageFlagBits, VkPipelineStageFlags,
+    VkPipelineVertexInputStateCreateInfo, VkPipelineViewportStateCreateInfo, VkPolygonMode,
+    VkPresentInfoKHR, VkPresentModeKHR, VkPrimitiveTopology, VkQueue, VkQueueFamilyProperties,
+    VkQueueFlagBits, VkRect2D, VkRenderPass, VkRenderPassBeginInfo, VkRenderPassCreateInfo,
+    VkResult, VkSampleCountFlagBits, VkSemaphore, VkSemaphoreCreateInfo, VkShaderModule,
+    VkShaderModuleCreateInfo, VkShaderStageFlagBits, VkSharingMode, VkStructureType, VkSubmitInfo,
+    VkSubpassContents, VkSubpassDependency, VkSubpassDescription, VkSurfaceCapabilitiesKHR,
+    VkSurfaceFormatKHR, VkSurfaceKHR, VkSwapchainCreateInfoKHR, VkSwapchainKHR, VkViewport,
+    VK_API_VERSION_1_0, VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_FALSE,
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_MAKE_API_VERSION, VK_SUBPASS_EXTERNAL, VK_TRUE,
 };
 use crate::{glfw::GLFWwindow, utils};
 
@@ -70,6 +81,8 @@ use VkColorComponentFlagBits::VK_COLOR_COMPONENT_B_BIT;
 use VkColorComponentFlagBits::VK_COLOR_COMPONENT_G_BIT;
 use VkColorComponentFlagBits::VK_COLOR_COMPONENT_R_BIT;
 use VkColorSpaceKHR::VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+use VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+use VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 use VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
 use VkCompositeAlphaFlagBitsKHR::VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 use VkCullModeFlagBits::VK_CULL_MODE_BACK_BIT;
@@ -79,8 +92,9 @@ use VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARN
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 use VkDebugUtilsMessageTypeFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
-use VkDynamicState::VK_DYNAMIC_STATE_LINE_WIDTH;
+use VkDynamicState::VK_DYNAMIC_STATE_SCISSOR;
 use VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT;
+use VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
 use VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
 use VkFrontFace::VK_FRONT_FACE_CLOCKWISE;
 use VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
@@ -103,22 +117,27 @@ use VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
 use VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
 use VkSharingMode::VK_SHARING_MODE_CONCURRENT;
 use VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
-use VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-use VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+use VkStructureType::{
+    VK_STRUCTURE_TYPE_APPLICATION_INFO, VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+    VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+    VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT, VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+    VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+    VK_STRUCTURE_TYPE_SUBMIT_INFO, VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+};
+use VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE;
 
 pub extern "C" fn debug_callback(
     message_severity: VkDebugUtilsMessageSeverityFlagBitsEXT,
@@ -158,6 +177,14 @@ impl QueueFamilyIndices {
     fn is_complete(&self) -> bool {
         self.graphics_family.is_some() && self.present_family.is_some()
     }
+
+    fn get_graphics_family(&self) -> u32 {
+        self.graphics_family.expect("Graphics family is null")
+    }
+
+    fn get_present_family(&self) -> u32 {
+        self.present_family.expect("Present family is null")
+    }
 }
 
 struct SwapChainSupportDetails {
@@ -187,6 +214,123 @@ pub struct VulkanApi {
     render_pass: OnceCell<VkRenderPass>,
     pipeline_layout: OnceCell<VkPipelineLayout>,
     graphics_pipeline: OnceCell<VkPipeline>,
+    swapchain_framebuffers: OnceCell<Vec<VkFramebuffer>>,
+    command_pool: OnceCell<VkCommandPool>,
+    command_buffer: OnceCell<VkCommandBuffer>,
+    image_available_semaphore: OnceCell<VkSemaphore>,
+    render_finished_semaphore: OnceCell<VkSemaphore>,
+    in_flight_fence: OnceCell<VkFence>,
+}
+
+impl VulkanApi {
+    fn _get_window(&self) -> *mut GLFWwindow {
+        *self.window.get().expect("Window is null")
+    }
+
+    fn _get_instance(&self) -> VkInstance {
+        *self.instance.get().expect("Instance is null")
+    }
+
+    fn _get_debug_messenger(&self) -> VkDebugUtilsMessengerEXT {
+        *self.debug_messenger.get().expect("Debug messenger is null")
+    }
+
+    fn _get_surface(&self) -> VkSurfaceKHR {
+        *self.surface.get().expect("Surface is null")
+    }
+
+    fn _get_physical_device(&self) -> VkPhysicalDevice {
+        *self.physical_device.get().expect("Physical device is null")
+    }
+
+    fn _get_device(&self) -> VkDevice {
+        *self.device.get().expect("Device is null")
+    }
+
+    fn _get_graphics_queue(&self) -> VkQueue {
+        *self.graphics_queue.get().expect("Graphics queue is null")
+    }
+
+    fn _get_present_queue(&self) -> VkQueue {
+        *self.present_queue.get().expect("Present queue is null")
+    }
+
+    fn _get_swapchain(&self) -> VkSwapchainKHR {
+        *self.swapchain.get().expect("Swapchain is null")
+    }
+
+    fn _get_swapchain_images(&self) -> &Vec<VkImage> {
+        self.swapchain_images
+            .get()
+            .expect("Swapchain images is null")
+    }
+
+    fn _get_swapchain_image_format(&self) -> VkFormat {
+        *self
+            .swapchain_image_format
+            .get()
+            .expect("Swapchain image format is null")
+    }
+
+    fn _get_swapchain_extent(&self) -> VkExtent2D {
+        *self
+            .swapchain_extent
+            .get()
+            .expect("Swapchain extent is null")
+    }
+
+    fn _get_swapchain_image_views(&self) -> &Vec<VkImageView> {
+        self.swapchain_image_views
+            .get()
+            .expect("Swapchain image views is null")
+    }
+
+    fn _get_render_pass(&self) -> VkRenderPass {
+        *self.render_pass.get().expect("Render pass is null")
+    }
+
+    fn _get_pipeline_layout(&self) -> VkPipelineLayout {
+        *self.pipeline_layout.get().expect("Pipeline layout is null")
+    }
+
+    fn _get_graphics_pipeline(&self) -> VkPipeline {
+        *self
+            .graphics_pipeline
+            .get()
+            .expect("Graphics pipeline is null")
+    }
+
+    fn _get_swapchain_framebuffers(&self) -> &Vec<VkFramebuffer> {
+        self.swapchain_framebuffers
+            .get()
+            .expect("Swapchain framebuffers is null")
+    }
+
+    fn _get_command_pool(&self) -> VkCommandPool {
+        *self.command_pool.get().expect("Command pool is null")
+    }
+
+    fn _get_command_buffer(&self) -> VkCommandBuffer {
+        *self.command_buffer.get().expect("Command buffer is null")
+    }
+
+    fn _get_image_available_semaphore(&self) -> VkSemaphore {
+        *self
+            .image_available_semaphore
+            .get()
+            .expect("Image available semaphore is null")
+    }
+
+    fn _get_render_finished_semaphore(&self) -> VkSemaphore {
+        *self
+            .render_finished_semaphore
+            .get()
+            .expect("Render finished semaphore is null")
+    }
+
+    fn _get_in_flight_fence(&self) -> VkFence {
+        *self.in_flight_fence.get().expect("In flight fence is null")
+    }
 }
 
 impl VulkanApi {
@@ -218,6 +362,12 @@ impl VulkanApi {
             render_pass: OnceCell::new(),
             pipeline_layout: OnceCell::new(),
             graphics_pipeline: OnceCell::new(),
+            swapchain_framebuffers: OnceCell::new(),
+            command_pool: OnceCell::new(),
+            command_buffer: OnceCell::new(),
+            image_available_semaphore: OnceCell::new(),
+            render_finished_semaphore: OnceCell::new(),
+            in_flight_fence: OnceCell::new(),
         }
     }
 
@@ -237,7 +387,7 @@ impl VulkanApi {
         let engine_name = CString::new("Oito-Caneco").expect("CString::new Oito-Caneco failed!");
 
         let app_info: VkApplicationInfo = VkApplicationInfo {
-            sType: VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO,
+            sType: VK_STRUCTURE_TYPE_APPLICATION_INFO,
             pNext: std::ptr::null(),
             pApplicationName: app_name.as_ptr(),
             applicationVersion: VK_MAKE_API_VERSION(0, 1, 0, 0),
@@ -260,7 +410,7 @@ impl VulkanApi {
         }
         let p_debug_create_info: *const VkDebugUtilsMessengerCreateInfoEXT = &debug_create_info;
         let create_info: VkInstanceCreateInfo = VkInstanceCreateInfo {
-            sType: VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+            sType: VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
             pApplicationInfo: &app_info,
             enabledExtensionCount: extensions.len() as u32,
             ppEnabledExtensionNames: extensions.as_ptr() as *const *const i8,
@@ -299,7 +449,7 @@ impl VulkanApi {
         let debug_callback: PFN_vkDebugUtilsMessengerCallbackEXT = Some(debug_callback_fn);
 
         let create_info: VkDebugUtilsMessengerCreateInfoEXT = VkDebugUtilsMessengerCreateInfoEXT {
-            sType: VkStructureType::VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+            sType: VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
             pNext: std::ptr::null(),
             flags: 0,
             messageSeverity: message_severity,
@@ -425,7 +575,7 @@ impl VulkanApi {
 
         let p_debug_create_info: *const VkDebugUtilsMessengerCreateInfoEXT = &debug_create_info;
         let result: VkResult = self._create_debug_utils_messenger_ext(
-            &self.instance.get().expect("Instance is null"),
+            &self._get_instance(),
             p_debug_create_info,
             std::ptr::null(),
             &mut debug_messenger,
@@ -480,8 +630,8 @@ impl VulkanApi {
     fn _create_surface(&self) {
         let mut surface: VkSurfaceKHR = unsafe { std::mem::zeroed() };
         let result: VkResult = glfw_create_window_surface(
-            *self.instance.get().expect("Instance is null"),
-            *self.window.get().expect("Window is null"),
+            self._get_instance(),
+            self._get_window(),
             std::ptr::null(),
             &mut surface,
         );
@@ -496,7 +646,7 @@ impl VulkanApi {
     fn _pick_physical_device(&self) {
         let mut device_count: u32 = 0;
         vk_enumerate_physical_devices(
-            *self.instance.get().expect("Instance is null"),
+            self._get_instance(),
             &mut device_count,
             std::ptr::null_mut(),
         );
@@ -511,7 +661,7 @@ impl VulkanApi {
         }
 
         vk_enumerate_physical_devices(
-            *self.instance.get().expect("Instance is null"),
+            self._get_instance(),
             &mut device_count,
             devices.as_mut_ptr(),
         );
@@ -562,14 +712,14 @@ impl VulkanApi {
         };
         vk_get_physical_device_surface_capabilities_khr(
             *device,
-            *self.surface.get().expect("Surface is null"),
+            self._get_surface(),
             &mut details.capabilities,
         );
 
         let mut format_count: u32 = 0;
         vk_get_physical_device_surface_formats_khr(
             *device,
-            *self.surface.get().expect("Surface is null"),
+            self._get_surface(),
             &mut format_count,
             std::ptr::null_mut(),
         );
@@ -580,7 +730,7 @@ impl VulkanApi {
             }
             vk_get_physical_device_surface_formats_khr(
                 *device,
-                *self.surface.get().expect("Surface is null"),
+                self._get_surface(),
                 &mut format_count,
                 details.formats.as_mut_ptr(),
             );
@@ -589,7 +739,7 @@ impl VulkanApi {
         let mut present_mode_count: u32 = 0;
         vk_get_physical_device_surface_present_modes_khr(
             *device,
-            *self.surface.get().expect("Surface is null"),
+            self._get_surface(),
             &mut present_mode_count,
             std::ptr::null_mut(),
         );
@@ -600,7 +750,7 @@ impl VulkanApi {
             }
             vk_get_physical_device_surface_present_modes_khr(
                 *device,
-                *self.surface.get().expect("Surface is null"),
+                self._get_surface(),
                 &mut present_mode_count,
                 details.present_modes.as_mut_ptr(),
             );
@@ -692,7 +842,7 @@ impl VulkanApi {
             vk_get_physical_device_surface_support_khr(
                 *device,
                 i,
-                *self.surface.get().expect("Surface is null"),
+                self._get_surface(),
                 &mut present_support,
             );
 
@@ -711,16 +861,11 @@ impl VulkanApi {
     }
 
     fn _create_logical_device(&self) {
-        let indices: QueueFamilyIndices =
-            self._find_queue_families(self.physical_device.get().expect("physical_device is null"));
+        let indices: QueueFamilyIndices = self._find_queue_families(&self._get_physical_device());
 
         let mut queue_create_infos: Vec<VkDeviceQueueCreateInfo> = Vec::new();
-
-        let unique_queue_families: HashSet<u32> = HashSet::from([
-            indices.graphics_family.expect("graphics_family is null"),
-            indices.present_family.expect("present_family is null"),
-        ]);
-
+        let unique_queue_families: HashSet<u32> =
+            HashSet::from([indices.get_graphics_family(), indices.get_present_family()]);
         let queue_priority: c_float = 1.0;
         for queue_family in unique_queue_families {
             let queue_create_info = VkDeviceQueueCreateInfo {
@@ -733,15 +878,6 @@ impl VulkanApi {
             };
             queue_create_infos.push(queue_create_info);
         }
-
-        // let queue_create_infos: Vec<VkDeviceQueueCreateInfo> = unsafe {
-        //     let mut new_vec: Vec<VkDeviceQueueCreateInfo> = Vec::with_capacity(queue_create_infos.len());
-        //     new_vec.set_len(queue_create_infos.len());
-        //     new_vec.copy_from_slice(&queue_create_infos);
-        //     new_vec
-        // };
-
-        // let device_extensions: Vec<c_char> = Vec::new();
 
         let mut enabled_layer_count: u32 = 0;
         let mut pp_enabled_layer_names: *const *const i8 = std::ptr::null();
@@ -766,7 +902,7 @@ impl VulkanApi {
 
         let device: VkDevice = unsafe { std::mem::zeroed() };
         let result: VkResult = vk_create_device(
-            *self.physical_device.get().expect("a"),
+            self._get_physical_device(),
             &create_info,
             std::ptr::null(),
             &device,
@@ -783,18 +919,14 @@ impl VulkanApi {
         let mut graphics_queue: VkQueue = unsafe { std::mem::zeroed() };
         let mut present_queue: VkQueue = unsafe { std::mem::zeroed() };
         vk_get_device_queue(
-            *self.device.get().expect("self.device is null"),
-            indices
-                .graphics_family
-                .expect("Failed to get indices.graphics_family"),
+            self._get_device(),
+            indices.get_graphics_family(),
             0,
             &mut graphics_queue,
         );
         vk_get_device_queue(
-            *self.device.get().expect("self.device is null"),
-            indices
-                .graphics_family
-                .expect("Failed to get indices.graphics_family"),
+            self._get_device(),
+            indices.get_present_family(),
             0,
             &mut present_queue,
         );
@@ -808,9 +940,8 @@ impl VulkanApi {
     }
 
     fn _create_swap_chain(&self) {
-        let swap_chain_support: SwapChainSupportDetails = self._query_swap_chain_support(
-            self.physical_device.get().expect("physical_device is null"),
-        );
+        let swap_chain_support: SwapChainSupportDetails =
+            self._query_swap_chain_support(&self._get_physical_device());
 
         let surface_format: VkSurfaceFormatKHR =
             self._choose_swap_surface_format(&swap_chain_support.formats);
@@ -825,20 +956,14 @@ impl VulkanApi {
             image_count = swap_chain_support.capabilities.maxImageCount;
         }
 
-        let indices: QueueFamilyIndices =
-            self._find_queue_families(self.physical_device.get().expect("physical_device is null"));
-        let graphics_family: u32 = indices
-            .graphics_family
-            .expect("Failed to get indices.graphics_family");
-        let present_family: u32 = indices
-            .present_family
-            .expect("Failed to get indices.present_family");
-        let queue_families_indices: Vec<u32> = vec![graphics_family, present_family];
+        let indices: QueueFamilyIndices = self._find_queue_families(&self._get_physical_device());
+        let queue_families_indices: Vec<u32> =
+            vec![indices.get_graphics_family(), indices.get_present_family()];
 
         let mut image_sharing_mode: VkSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         let mut queue_family_index_count: u32 = 0;
         let mut p_queue_family_indices: *const u32 = std::ptr::null();
-        if graphics_family != present_family {
+        if indices.get_graphics_family() != indices.get_present_family() {
             image_sharing_mode = VK_SHARING_MODE_CONCURRENT;
             queue_family_index_count = 2;
             p_queue_family_indices = queue_families_indices.as_ptr();
@@ -846,7 +971,7 @@ impl VulkanApi {
 
         let create_info: VkSwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR {
             sType: VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-            surface: *self.surface.get().expect("Failed to get surface"),
+            surface: self._get_surface(),
             minImageCount: image_count,
             imageFormat: surface_format.format,
             imageColorSpace: surface_format.colorSpace,
@@ -868,7 +993,7 @@ impl VulkanApi {
         let mut swapchain: VkSwapchainKHR = unsafe { std::mem::zeroed() };
 
         let result = vk_create_swapchain_khr(
-            *self.device.get().expect("Failed to get device"),
+            self._get_device(),
             &create_info,
             std::ptr::null(),
             &mut swapchain,
@@ -883,8 +1008,8 @@ impl VulkanApi {
             .expect("Failed to set swapchain");
 
         vk_get_swapchain_images_khr(
-            *self.device.get().expect("Failed to get device"),
-            *self.swapchain.get().expect("Failed to get swapchain"),
+            self._get_device(),
+            self._get_swapchain(),
             &mut image_count,
             std::ptr::null_mut(),
         );
@@ -894,21 +1019,21 @@ impl VulkanApi {
             swapchain_images.set_len(image_count as usize);
         }
         vk_get_swapchain_images_khr(
-            *self.device.get().expect("Failed to get device"),
-            *self.swapchain.get().expect("Failed to get swapchain"),
+            self._get_device(),
+            self._get_swapchain(),
             &mut image_count,
             swapchain_images.as_mut_ptr(),
         );
 
         self.swapchain_images
             .set(swapchain_images)
-            .expect("Failed to set self.swapchain_images");
+            .expect("Failed to set swapchain images");
         self.swapchain_image_format
             .set(surface_format.format)
-            .expect("Failed to set self.swapchain_image_format");
+            .expect("Failed to set swapchain image format");
         self.swapchain_extent
             .set(extent)
-            .expect("Failed to set self.swapchain_extent");
+            .expect("Failed to set swapchain extent");
     }
 
     fn _choose_swap_extent(&self, capabilities: &VkSurfaceCapabilitiesKHR) -> VkExtent2D {
@@ -918,11 +1043,7 @@ impl VulkanApi {
 
         let mut width: c_int = unsafe { std::mem::zeroed() };
         let mut height: c_int = unsafe { std::mem::zeroed() };
-        glfw_get_framebuffer_size(
-            *self.window.get().expect("Failed to get Window"),
-            &mut width,
-            &mut height,
-        );
+        glfw_get_framebuffer_size(self._get_window(), &mut width, &mut height);
 
         let width: u32 = width.clamp(
             capabilities.minImageExtent.width as i32,
@@ -966,26 +1087,19 @@ impl VulkanApi {
     }
 
     fn _create_image_views(&self) {
-        let swapchain_images: &Vec<VkImage> = self
-            .swapchain_images
-            .get()
-            .expect("Swapchain images is null");
         let mut swapchain_image_views: Vec<VkImageView> =
-            Vec::with_capacity(swapchain_images.len());
+            Vec::with_capacity(self._get_swapchain_images().len());
         unsafe {
-            swapchain_image_views.set_len(swapchain_images.len());
+            swapchain_image_views.set_len(self._get_swapchain_images().len());
         }
 
         let mut i = 0;
-        for swapchain_image in swapchain_images {
+        for swapchain_image in self._get_swapchain_images() {
             let create_info: VkImageViewCreateInfo = VkImageViewCreateInfo {
                 sType: VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
                 image: *swapchain_image,
                 viewType: VK_IMAGE_VIEW_TYPE_2D,
-                format: *self
-                    .swapchain_image_format
-                    .get()
-                    .expect("Swapchain image format is null"),
+                format: self._get_swapchain_image_format(),
                 components: VkComponentMapping {
                     r: VK_COMPONENT_SWIZZLE_IDENTITY,
                     g: VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -1004,7 +1118,7 @@ impl VulkanApi {
             };
 
             let result = vk_create_image_view(
-                *self.device.get().expect("Device is null"),
+                self._get_device(),
                 &create_info,
                 std::ptr::null(),
                 &mut swapchain_image_views[i],
@@ -1025,10 +1139,7 @@ impl VulkanApi {
     }
     fn _create_render_pass(&self) {
         let color_attachment: VkAttachmentDescription = VkAttachmentDescription {
-            format: *self
-                .swapchain_image_format
-                .get()
-                .expect("Swapchain image format is null"),
+            format: self._get_swapchain_image_format(),
             samples: VK_SAMPLE_COUNT_1_BIT,
             loadOp: VK_ATTACHMENT_LOAD_OP_CLEAR,
             storeOp: VK_ATTACHMENT_STORE_OP_STORE,
@@ -1081,7 +1192,7 @@ impl VulkanApi {
 
         let mut render_pass: VkRenderPass = unsafe { std::mem::zeroed() };
         let result: VkResult = vk_create_render_pass(
-            *self.device.get().expect("Device is null"),
+            self._get_device(),
             &render_pass_info,
             std::ptr::null(),
             &mut render_pass,
@@ -1151,23 +1262,18 @@ impl VulkanApi {
                 flags: 0,
             };
 
-        let swapchain_extent: VkExtent2D = *self
-            .swapchain_extent
-            .get()
-            .expect("Swapchain extent is null");
-
         let viewport: VkViewport = VkViewport {
             x: 0.0,
             y: 0.0,
-            width: swapchain_extent.width as c_float,
-            height: swapchain_extent.height as c_float,
+            width: self._get_swapchain_extent().width as c_float,
+            height: self._get_swapchain_extent().height as c_float,
             minDepth: 0.0,
             maxDepth: 1.0,
         };
 
         let scissor: VkRect2D = VkRect2D {
             offset: VkOffset2D { x: 0, y: 0 },
-            extent: swapchain_extent,
+            extent: self._get_swapchain_extent(),
         };
 
         let viewport_state: VkPipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo {
@@ -1240,7 +1346,7 @@ impl VulkanApi {
             };
 
         let dynamic_states: Vec<VkDynamicState> =
-            vec![VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH];
+            vec![VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR];
 
         let dynamic_state: VkPipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo {
             sType: VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -1262,7 +1368,7 @@ impl VulkanApi {
 
         let mut pipeline_layout: VkPipelineLayout = unsafe { std::mem::zeroed() };
         let result = vk_create_pipeline_layout(
-            *self.device.get().expect("Device is null"),
+            self._get_device(),
             &pipeline_layout_info,
             std::ptr::null(),
             &mut pipeline_layout,
@@ -1286,8 +1392,8 @@ impl VulkanApi {
             pDepthStencilState: std::ptr::null(),
             pColorBlendState: &color_blending,
             pDynamicState: &dynamic_state,
-            layout: *self.pipeline_layout.get().expect("Pipeline layout is null"),
-            renderPass: *self.render_pass.get().expect("Render pass is null"),
+            layout: self._get_pipeline_layout(),
+            renderPass: self._get_render_pass(),
             subpass: 0,
             basePipelineHandle: std::ptr::null_mut(),
             basePipelineIndex: -1,
@@ -1298,7 +1404,7 @@ impl VulkanApi {
 
         let mut graphics_pipeline: VkPipeline = unsafe { std::mem::zeroed() };
         let result: VkResult = vk_create_graphics_pipelines(
-            *self.device.get().expect("Device is null"),
+            self._get_device(),
             std::ptr::null_mut(),
             1,
             &graphics_pipeline_info,
@@ -1312,16 +1418,8 @@ impl VulkanApi {
             .set(graphics_pipeline)
             .expect("Graphics pipeline can not be initialized!");
 
-        vk_destroy_shader_module(
-            *self.device.get().expect("Device is null"),
-            vert_shader_module,
-            std::ptr::null(),
-        );
-        vk_destroy_shader_module(
-            *self.device.get().expect("Device is null"),
-            frag_shader_module,
-            std::ptr::null(),
-        );
+        vk_destroy_shader_module(self._get_device(), vert_shader_module, std::ptr::null());
+        vk_destroy_shader_module(self._get_device(), frag_shader_module, std::ptr::null());
     }
 
     fn _create_shader_module(&self, code: &Vec<c_char>) -> VkShaderModule {
@@ -1335,7 +1433,7 @@ impl VulkanApi {
 
         let mut shader_module: VkShaderModule = unsafe { std::mem::zeroed() };
         let result: VkResult = vk_create_shader_module(
-            *self.device.get().expect("Device is null"),
+            self._get_device(),
             &create_info,
             std::ptr::null(),
             &mut shader_module,
@@ -1366,10 +1464,214 @@ impl VulkanApi {
 
         result
     }
-    fn _create_framebuffers(&self) {}
-    fn _create_command_pool(&self) {}
-    fn _create_command_buffers(&self) {}
-    fn _create_sync_objects(&self) {}
+    fn _create_framebuffers(&self) {
+        let mut swapchain_framebuffers: Vec<VkFramebuffer> =
+            Vec::with_capacity(self._get_swapchain_image_views().len());
+        for swapchain_image_view in self._get_swapchain_image_views() {
+            let attachments: Vec<VkImageView> = vec![*swapchain_image_view];
+            let framebuffer_info: VkFramebufferCreateInfo = VkFramebufferCreateInfo {
+                sType: VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                renderPass: self._get_render_pass(),
+                attachmentCount: 1,
+                pAttachments: attachments.as_ptr(),
+                width: self._get_swapchain_extent().width,
+                height: self._get_swapchain_extent().height,
+                layers: 1,
+                pNext: std::ptr::null(),
+                flags: 0,
+            };
+
+            let mut framebuffer: VkFramebuffer = unsafe { std::mem::zeroed() };
+            let result: VkResult = vk_create_framebuffer(
+                self._get_device(),
+                &framebuffer_info,
+                std::ptr::null(),
+                &mut framebuffer,
+            );
+            if result != VK_SUCCESS {
+                panic!("Failed to create framebuffer!");
+            }
+            swapchain_framebuffers.push(framebuffer);
+        }
+
+        if debug_mode() {
+            println!("Vulkan swapchain framebuffers created");
+        }
+        self.swapchain_framebuffers
+            .set(swapchain_framebuffers)
+            .expect("Failed to set swapchain framebuffers");
+    }
+    fn _create_command_pool(&self) {
+        let queue_family_indices: QueueFamilyIndices =
+            self._find_queue_families(&self._get_physical_device());
+
+        let pool_info: VkCommandPoolCreateInfo = VkCommandPoolCreateInfo {
+            sType: VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            flags: VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT as u32,
+            queueFamilyIndex: queue_family_indices.get_graphics_family(),
+            pNext: std::ptr::null(),
+        };
+        let mut command_pool: VkCommandPool = unsafe { std::mem::zeroed() };
+        let result: VkResult = vk_create_command_pool(
+            self._get_device(),
+            &pool_info,
+            std::ptr::null(),
+            &mut command_pool,
+        );
+        if result != VK_SUCCESS {
+            panic!("Failed to create command pool!");
+        }
+        self.command_pool
+            .set(command_pool)
+            .expect("Command pool can not be initialized!");
+        if debug_mode() {
+            println!("Vulkan command pool created");
+        }
+    }
+    fn _create_command_buffers(&self) {
+        let alloc_info: VkCommandBufferAllocateInfo = VkCommandBufferAllocateInfo {
+            sType: VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+            commandPool: self._get_command_pool(),
+            level: VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+            commandBufferCount: 1,
+            pNext: std::ptr::null(),
+        };
+
+        let mut command_buffer: VkCommandBuffer = unsafe { std::mem::zeroed() };
+        let result: VkResult =
+            vk_allocate_command_buffers(self._get_device(), &alloc_info, &mut command_buffer);
+        if result != VK_SUCCESS {
+            panic!("Failed to allocate command buffers!");
+        }
+        if debug_mode() {
+            println!("Vulkan command buffer created");
+        }
+        self.command_buffer
+            .set(command_buffer)
+            .expect("Command buffer can not be initialized!");
+    }
+    fn _create_sync_objects(&self) {
+        let semaphore_info: VkSemaphoreCreateInfo = VkSemaphoreCreateInfo {
+            sType: VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+            pNext: std::ptr::null(),
+            flags: 0,
+        };
+
+        let fence_info: VkFenceCreateInfo = VkFenceCreateInfo {
+            sType: VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+            flags: VK_FENCE_CREATE_SIGNALED_BIT as u32,
+            pNext: std::ptr::null(),
+        };
+
+        let mut image_available_semaphore: VkSemaphore = unsafe { std::mem::zeroed() };
+        let mut render_finished_semaphore: VkSemaphore = unsafe { std::mem::zeroed() };
+        let mut in_flight_fence: VkFence = unsafe { std::mem::zeroed() };
+
+        let result_semaphore_image_available: VkResult = vk_create_semaphore(
+            self._get_device(),
+            &semaphore_info,
+            std::ptr::null(),
+            &mut image_available_semaphore,
+        );
+        let result_semaphore_render_finished: VkResult = vk_create_semaphore(
+            self._get_device(),
+            &semaphore_info,
+            std::ptr::null(),
+            &mut render_finished_semaphore,
+        );
+        let result_fence: VkResult = vk_create_fence(
+            self._get_device(),
+            &fence_info,
+            std::ptr::null(),
+            &mut in_flight_fence,
+        );
+
+        if result_semaphore_image_available != VK_SUCCESS
+            || result_semaphore_render_finished != VK_SUCCESS
+            || result_fence != VK_SUCCESS
+        {
+            panic!("Failed to create synchronization objects!");
+        }
+        self.image_available_semaphore
+            .set(image_available_semaphore)
+            .expect("Image available semaphore can not be initialized!");
+        self.render_finished_semaphore
+            .set(render_finished_semaphore)
+            .expect("Render finished semaphore can not be initialized!");
+        self.in_flight_fence
+            .set(in_flight_fence)
+            .expect("In flight fence can not be initialized!");
+        if debug_mode() {
+            println!("Vulkan synchronization objects created");
+        }
+    }
+
+    fn _record_command_buffer(&self, command_buffer: VkCommandBuffer, image_index: u32) {
+        let begin_info: VkCommandBufferBeginInfo = VkCommandBufferBeginInfo {
+            sType: VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            flags: 0,
+            pInheritanceInfo: std::ptr::null(),
+            pNext: std::ptr::null(),
+        };
+
+        let result: VkResult = vk_begin_command_buffer(command_buffer, &begin_info);
+        if result != VK_SUCCESS {
+            panic!("Failed to begin recording command buffer!");
+        }
+
+        let clear_color: VkClearValue = VkClearValue {
+            color: VkClearColorValue {
+                float32: [0.0, 0.0, 0.0, 1.0],
+            },
+        };
+        let render_area = VkRect2D {
+            offset: VkOffset2D { x: 0, y: 0 },
+            extent: self._get_swapchain_extent(),
+        };
+        let render_pass_info: VkRenderPassBeginInfo = VkRenderPassBeginInfo {
+            sType: VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+            renderPass: self._get_render_pass(),
+            framebuffer: self._get_swapchain_framebuffers()[image_index as usize],
+            renderArea: render_area,
+            clearValueCount: 1,
+            pClearValues: &clear_color,
+            pNext: std::ptr::null(),
+        };
+
+        vk_cmd_begin_render_pass(
+            command_buffer,
+            &render_pass_info,
+            VK_SUBPASS_CONTENTS_INLINE,
+        );
+        vk_cmd_bind_pipeline(
+            command_buffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            self._get_graphics_pipeline(),
+        );
+
+        let viewport: VkViewport = VkViewport {
+            x: 0.0,
+            y: 0.0,
+            width: self._get_swapchain_extent().width as c_float,
+            height: self._get_swapchain_extent().height as c_float,
+            minDepth: 0.0,
+            maxDepth: 1.0,
+        };
+        vk_cmd_set_viewport(command_buffer, 0, 1, &viewport);
+
+        let scissor: VkRect2D = VkRect2D {
+            offset: VkOffset2D { x: 0, y: 0 },
+            extent: self._get_swapchain_extent(),
+        };
+        vk_cmd_set_scissor(command_buffer, 0, 1, &scissor);
+        vk_cmd_draw(command_buffer, 3, 1, 0, 0);
+        vk_cmd_end_render_pass(command_buffer);
+
+        let result: VkResult = vk_end_command_buffer(command_buffer);
+        if result != VK_SUCCESS {
+            panic!("Failed to record command buffer!");
+        }
+    }
 }
 
 impl GraphicApi for VulkanApi {
@@ -1429,80 +1731,151 @@ impl GraphicApi for VulkanApi {
             println!("Vulkan cleanup");
         }
 
+        vk_destroy_semaphore(
+            self._get_device(),
+            self._get_render_finished_semaphore(),
+            std::ptr::null(),
+        );
+        vk_destroy_semaphore(
+            self._get_device(),
+            self._get_image_available_semaphore(),
+            std::ptr::null(),
+        );
+        vk_destroy_fence(
+            self._get_device(),
+            self._get_in_flight_fence(),
+            std::ptr::null(),
+        );
+
+        vk_destroy_command_pool(
+            self._get_device(),
+            self._get_command_pool(),
+            std::ptr::null(),
+        );
+
+        for swapchain_framebuffer in self._get_swapchain_framebuffers() {
+            vk_destroy_framebuffer(self._get_device(), *swapchain_framebuffer, std::ptr::null());
+        }
+
         vk_destroy_pipeline(
-            *self.device.get().expect("Device is null"),
-            *self
-                .graphics_pipeline
-                .get()
-                .expect("Graphics pipeline is null"),
+            self._get_device(),
+            self._get_graphics_pipeline(),
             std::ptr::null(),
         );
 
         vk_destroy_pipeline_layout(
-            *self.device.get().expect("Device is null"),
-            *self.pipeline_layout.get().expect("Pipeline layout is null"),
+            self._get_device(),
+            self._get_pipeline_layout(),
             std::ptr::null(),
         );
 
         vk_destroy_render_pass(
-            *self.device.get().expect("Device is null"),
-            *self.render_pass.get().expect("Render pass is null"),
+            self._get_device(),
+            self._get_render_pass(),
             std::ptr::null(),
         );
 
-        let swapchain_image_views: &Vec<VkImageView> = self
-            .swapchain_image_views
-            .get()
-            .expect("Swapchain image views is null");
-        for swapchain_image_view in swapchain_image_views {
-            vk_destroy_image_view(
-                *self.device.get().expect("Device is null"),
-                *swapchain_image_view,
-                std::ptr::null(),
-            );
+        for swapchain_image_view in self._get_swapchain_image_views() {
+            vk_destroy_image_view(self._get_device(), *swapchain_image_view, std::ptr::null());
         }
 
-        vk_destroy_swapchain_khr(
-            *self.device.get().expect("Device is null"),
-            *self.swapchain.get().expect("Swapchain is null"),
-            std::ptr::null(),
-        );
+        vk_destroy_swapchain_khr(self._get_device(), self._get_swapchain(), std::ptr::null());
 
-        vk_destroy_device(
-            *self.device.get().expect("Device is null"),
-            std::ptr::null(),
-        );
+        vk_destroy_device(self._get_device(), std::ptr::null());
 
-        vk_destroy_surface_khr(
-            *self.instance.get().expect("Instance is null"),
-            *self.surface.get().expect("Surface is null"),
-            std::ptr::null(),
-        );
+        vk_destroy_surface_khr(self._get_instance(), self._get_surface(), std::ptr::null());
 
         if self._enable_validation_layers() {
             self.destroy_debug_utils_messenger_ext(
-                self.instance.get().expect("Instance is null"),
-                self.debug_messenger.get().expect("Debug messenger is null"),
+                &self._get_instance(),
+                &self._get_debug_messenger(),
                 std::ptr::null(),
             );
         }
 
-        vk_destroy_instance(
-            *self.instance.get().expect("Instance is null"),
-            std::ptr::null(),
-        );
-        glfw_destroy_window(*self.window.get().expect("Window is null"));
+        vk_destroy_instance(self._get_instance(), std::ptr::null());
+        glfw_destroy_window(self._get_window());
         glfw_terminate();
     }
 
     fn should_close(&self) -> bool {
-        let should_close: i32 =
-            glfw_window_should_close(*self.window.get().expect("Window is null"));
+        let should_close: i32 = glfw_window_should_close(self._get_window());
 
         should_close != 0
     }
 
     fn pool_events(&self) {
         glfw_poll_events();
+    }
+
+    fn wait_events(&self) {
+        vk_wait_for_fences(
+            self._get_device(),
+            1,
+            &self._get_in_flight_fence(),
+            VK_TRUE,
+            std::u64::MAX,
+        );
+        vk_reset_fences(self._get_device(), 1, &self._get_in_flight_fence());
+    }
+
+    fn draw_frame(&self) {
+        let mut image_index: u32 = 0;
+
+        vk_acquire_next_image_khr(
+            self._get_device(),
+            self._get_swapchain(),
+            std::u64::MAX,
+            self._get_image_available_semaphore(),
+            std::ptr::null_mut(),
+            &mut image_index,
+        );
+
+        vk_reset_command_buffer(self._get_command_buffer(), 0);
+        self._record_command_buffer(self._get_command_buffer(), image_index);
+
+        let wait_semaphores: Vec<VkSemaphore> = vec![self._get_image_available_semaphore()];
+        let wait_stages: Vec<VkPipelineStageFlags> =
+            vec![VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT as u32];
+        let signal_semaphores: Vec<VkSemaphore> = vec![self._get_render_finished_semaphore()];
+        let submit_info = VkSubmitInfo {
+            sType: VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            waitSemaphoreCount: 1,
+            pWaitSemaphores: wait_semaphores.as_ptr(),
+            pWaitDstStageMask: wait_stages.as_ptr(),
+            commandBufferCount: 1,
+            pCommandBuffers: &self._get_command_buffer(),
+            signalSemaphoreCount: 1,
+            pSignalSemaphores: signal_semaphores.as_ptr(),
+            pNext: std::ptr::null(),
+        };
+
+        let result: VkResult = vk_queue_submit(
+            self._get_graphics_queue(),
+            1,
+            &submit_info,
+            self._get_in_flight_fence(),
+        );
+        if result != VK_SUCCESS {
+            panic!("Failed to submit draw command buffer!");
+        }
+
+        let swapchains = vec![self._get_swapchain()];
+        let preset_info = VkPresentInfoKHR {
+            sType: VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+            waitSemaphoreCount: 1,
+            pWaitSemaphores: signal_semaphores.as_ptr(),
+            swapchainCount: 1,
+            pSwapchains: swapchains.as_ptr(),
+            pImageIndices: &image_index,
+            pResults: std::ptr::null_mut(),
+            pNext: std::ptr::null(),
+        };
+
+        vk_queue_present_khr(self._get_present_queue(), &preset_info);
+    }
+
+    fn wait_device_idle(&self) {
+        vk_device_wait_idle(self._get_device());
     }
 }

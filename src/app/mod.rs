@@ -38,6 +38,15 @@ impl App {
                 break;
             }
             self.graphic_api.pool_events();
+
+            self._draw_frame();
         }
+
+        self.graphic_api.wait_device_idle();
+    }
+
+    fn _draw_frame(&self) {
+        self.graphic_api.wait_events();
+        self.graphic_api.draw_frame();
     }
 }
